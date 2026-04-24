@@ -2,7 +2,7 @@ name: Unity Tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, "feature/**"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -38,6 +38,10 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: .
+          # Pinned: game-ci hasn't published a 6000.4.3f1 image yet (our local
+          # Unity). 6000.4.2f1 is close enough to run tests against; bump when
+          # game-ci catches up with local.
+          unityVersion: 6000.4.2f1
           testMode: all
           artifactsPath: test-results
           githubToken: ${{ secrets.GITHUB_TOKEN }}

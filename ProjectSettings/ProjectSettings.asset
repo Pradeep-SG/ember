@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: ember
+  productName: Kindrith
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -602,14 +602,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: ember
+  metroPackageName: kindrith
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: ember
+  metroApplicationDescription: kindrith
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -684,7 +684,7 @@ PlayerSettings:
   cloudProjectId: 07ca9d93-074c-4970-a422-e609f6c64611
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: ember
+  projectName: kindrith
   organizationId: pradeepsg2001
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

@@ -1,2 +1,3 @@
 ﻿<Solution>
+  <Project Path="Tests.EditMode.csproj" />
 </Solution>
