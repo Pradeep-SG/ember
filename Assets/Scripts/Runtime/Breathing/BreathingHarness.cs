@@ -66,11 +66,39 @@ namespace Kindrith.Breathing
             rt.anchoredPosition = Vector2.zero;
 
             var image = circleGo.GetComponent<Image>();
+            image.sprite = CreateCircleSprite(256);
             image.color = _palette.Bone;
 
             var view = circleGo.GetComponent<BreathingCircleView>();
             view.SetReferences(rt, image, _palette);
             view.Bind(_breathing);
+        }
+
+        // Soft-edged white circle so scaling reads as smooth and the shape looks circular.
+        // The Image tints it via .color, so keep the source white.
+        static Sprite CreateCircleSprite(int size)
+        {
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+            };
+            var pixels = new Color32[size * size];
+            float radius = size * 0.5f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = x - radius + 0.5f;
+                    float dy = y - radius + 0.5f;
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                    float alpha = Mathf.Clamp01(radius - dist);
+                    pixels[y * size + x] = new Color32(255, 255, 255, (byte)(alpha * 255f));
+                }
+            }
+            tex.SetPixels32(pixels);
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
         }
     }
 }
