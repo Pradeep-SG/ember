@@ -1,0 +1,16 @@
+{
+    "name": "Kindrith.Breathing",
+    "rootNamespace": "Kindrith.Breathing",
+    "references": [
+        "GUID:6dbb9528ab844bf5954217f00341e6ad"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
