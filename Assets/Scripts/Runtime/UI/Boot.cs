@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using Kindrith.Analytics;
 using Kindrith.Dialogue;
 using Kindrith.Persistence;
@@ -29,6 +31,8 @@ namespace Kindrith.UI
             _analytics = new AnalyticsBus(_sink, _envelope);
             _store = new BattleStore();
             _foregroundStartS = Time.realtimeSinceStartup;
+
+            EnsureEventSystem();
 
             var homeGo = new GameObject("HomeShell");
             homeGo.transform.SetParent(transform, false);
@@ -88,6 +92,18 @@ namespace Kindrith.UI
         {
             _homeShell?.RefreshSessionLog();
             _homeShell?.SetVisible(true);
+        }
+
+        // Unity UI Buttons need an EventSystem to receive input; programmatic Canvas creation
+        // doesn't auto-add one, and our hand-authored Bootstrap.unity scene doesn't include
+        // one either. Spawn one if missing so the Resist tap actually fires.
+        static void EnsureEventSystem()
+        {
+            if (EventSystem.current != null) return;
+            var go = new GameObject("EventSystem");
+            go.AddComponent<EventSystem>();
+            go.AddComponent<InputSystemUIInputModule>();
+            DontDestroyOnLoad(go);
         }
 
         void OnApplicationPause(bool paused)
