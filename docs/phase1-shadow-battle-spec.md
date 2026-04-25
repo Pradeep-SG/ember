@@ -100,7 +100,7 @@ Phase2Entry
                                                    Phase2Exit (routes to Phase 3)
 ```
 
-**Depth:** 2 turns (Node_0 → Node_2 → exit). Each turn offers **3 options**. The tree is **archetype-specific** — the summoned Demon (e.g., Craving Demon for smoking) picks from its own dialogue pool. See `demon-archetypes.md` for the dialogue pools.
+**Depth:** 2 turns (Node_0 → Node_2 → exit). Each turn offers **3 options**. **Total nodes per tree: 8** (Node_0, Node_1a, Node_1b, Node_1c, Node_2, Node_3a, Node_3b, Node_3c). The tree is **archetype-specific** — the summoned Demon (e.g., Craving Demon for smoking) picks from its own dialogue pool. See `demon-archetypes.md` for the dialogue pools. (Earlier brief drafts said 7 nodes; the canonical count is 8.)
 
 ### 3.2 Option evaluation
 
@@ -143,7 +143,7 @@ After 2 s of silence and a widening Hearth glow, a **three-beat prompt** appears
 
 - Beat 1: a Bone ring expands from the Demon's core; the player must tap when it reaches the edge of the frame. Window: ±180 ms.
 - Beat 2: immediately after, a Duskwine ring contracts inward; tap when it reaches the Demon's core. Window: ±180 ms.
-- Beat 3: a final Hearth ring expands and must be **held** (touch held) until it reaches the frame edge, then released. Hold duration: 800 ms ±120 ms.
+- Beat 3: a final Hearth ring expands and must be **held** (touch held) until it reaches the frame edge, then released. Hold duration: **800 ms ±120 ms** — the canonical figure tracked by `FinisherSequencer.HoldDurationMs` / `HoldToleranceMs`. (Earlier brief drafts mentioned 700 ms; treat 800±120 as authoritative.)
 
 This pattern is memorizable but punishing — it's a skill check on attention, which is the state the player just spent 2.5 minutes cultivating.
 
@@ -254,6 +254,24 @@ Where:
 - **Clarity +1** is an integer token displayed on the home screen post-battle, for the duration of a 24h debug-timer (visible when debug flag on). In Phase 2+, Clarity becomes the real buff.
 - **Shard of Bone** is a placeholder item name. One variety only in Phase 1.
 - **[debug info if on]**: in builds with the `DEBUG_BATTLE` flag, show per-phase grade, tap accuracy stats, time to complete, Demon archetype ID. Never in production.
+
+---
+
+## 6.1 Phase 1 analytics events (canonical count)
+
+Phase 1 emits **9 distinct event names** through the run:
+
+1. `app_opened` — cold start or foreground resume
+2. `app_backgrounded` — app pause
+3. `shadow_battle_started`
+4. `shadow_battle_phase_entered` (×3 per battle: phase1, phase2, phase3)
+5. `shadow_battle_tap_registered` (one per Phase-1 tap)
+6. `shadow_battle_dialogue_choice` (one per Phase-2 option pick)
+7. `shadow_battle_finisher_beat` (×3 per battle)
+8. `shadow_battle_completed` (terminal — carries `outcome=abandon`+`abandon_reason` for Abandon flows; no separate `shadow_battle_abandoned` in Phase 1)
+9. `feedback_submitted` (Phase 1 feedback button — when wired)
+
+A clean win flow emits 11+ rows total: 1 started + 3 phase_entered + N tap_registered + 2 dialogue_choice + 3 finisher_beat + 1 completed. (Earlier brief drafts said "exactly 8 events" — that figure was wrong; the canonical contract is in `docs/analytics-taxonomy.md` §2.5 and pinned by `EditMode/P1ParameterAuditTests.cs`.)
 
 ---
 

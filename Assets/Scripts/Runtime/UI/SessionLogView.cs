@@ -44,12 +44,12 @@ namespace Kindrith.UI
             var records = _store.LoadRecent(MaxEntries);
             if (records == null || records.Length == 0)
             {
-                _text.text = "No battles yet.";
+                _text.text = Strings.SessionLogEmpty;
                 return;
             }
 
             var sb = new StringBuilder();
-            sb.AppendLine("Last battles:");
+            sb.AppendLine(Strings.SessionLogHeader);
             foreach (var record in records)
             {
                 if (record == null) continue;

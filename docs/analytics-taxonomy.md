@@ -120,62 +120,60 @@ Params: `chain_id`, `demon_id`, `days_alive`, `total_battles_fought`, `total_bat
 This is the subsystem we care most about in Phase 1. Events are verbose.
 
 #### `shadow_battle_started` (P1)
-Params:
+**P1 today (audit-pinned):**
 - `battle_id`
-- `chain_id` (nullable in Phase 1 if no Chain system yet — still log)
-- `demon_id` (nullable in Phase 1)
-- `demon_archetype` (enum: `permission_giver`, `tender_excuse`, `tomorrows_warden`, `accountant`, `comparison`)
-- `trigger` (enum: `user_resist_tap`, `dev_menu`, `notification_tap`)
-- `time_since_last_battle_ms` (nullable)
+- `demon_archetype` (enum: `permissiongiver`, `tenderexcuse`, `tomorrowswarden` — `ArchetypeId.ToString().ToLowerInvariant()` until Phase 2 adds canonical id mapping)
+- `trigger` (enum: `user_resist_tap`)
+
+**Phase 2 expansion** — added when Chain/Demon entities ship:
+- `chain_id`, `demon_id`, `time_since_last_battle_ms`
 
 #### `shadow_battle_phase_entered` (P1)
-Params:
+**P1 today (audit-pinned):**
 - `battle_id`
-- `phase` (enum: `rhythm_breathing`, `choice`, `finisher`)
-- `entry_context` — for Phase 2: `beads_remaining`, `clarity_pool_start`; for Phase 3: `counters_landed_in_phase2`.
+- `phase` (enum: `phase1`, `phase2`, `phase3`, `outcome` — runtime values from `BattlePhase.ToString().ToLowerInvariant()`)
+- `entry_context` (dictionary; for Phase 2: `beads_remaining`)
 
 #### `shadow_battle_tap_registered` (P1)
 Fires on every tap during Phase 1. High-volume; batch on emission.
 
-Params:
+**P1 today (audit-pinned):**
 - `battle_id`
 - `cycle_index` (0-indexed within the battle)
 - `offset_ms` (relative to intended tap moment; negative = early, positive = late)
 - `grade` (enum: `perfect`, `clean`, `loose`, `miss`)
 
 #### `shadow_battle_dialogue_choice` (P1)
-Params:
+**P1 today (audit-pinned):**
 - `battle_id`
-- `node_id` (string: `node_0`, `node_2`)
+- `node_id` (string)
 - `option_index` (0, 1, 2)
 - `option_class` (enum: `counter`, `deflect`, `agree`)
 - `latency_ms` (time from prompt to pick)
 
 #### `shadow_battle_finisher_beat` (P1)
-Params:
+**P1 today (audit-pinned):**
 - `battle_id`
 - `beat_index` (0, 1, 2)
 - `landed` (bool)
 - `offset_ms` (nullable when not landed)
 
 #### `shadow_battle_completed` (P1)
-Params:
+**P1 today (audit-pinned):**
 - `battle_id`
-- `outcome` (enum: `win`, `critical_win`, `loss`, `abandon`)
-- `total_duration_ms`
-- `phase1_duration_ms`, `phase2_duration_ms`, `phase3_duration_ms` (nullable if phase not reached)
+- `outcome` (enum: `win`, `criticalwin`, `loss`, `abandon` — runtime values from `BattleOutcome.ToString().ToLowerInvariant()`)
+- `phase3_beats_landed`
+- `final_beads_extinguished` (bool)
+- `abandon_reason` (only present on Abandon)
+
+**Phase 2 expansion** — added once duration / per-phase tap counts are tracked:
+- `total_duration_ms`, `phase1_duration_ms`, `phase2_duration_ms`, `phase3_duration_ms`
 - `phase1_taps_perfect`, `phase1_taps_clean`, `phase1_taps_loose`, `phase1_taps_miss`
 - `phase2_counters`, `phase2_deflects`, `phase2_agrees`
-- `phase3_beats_landed`
-- `final_beads_extinguished`
 - `clarity_awarded`
 
-#### `shadow_battle_abandoned` (P1)
-Params:
-- `battle_id`
-- `abandoned_at_phase` (enum)
-- `abandon_reason` (enum: `user_exit`, `force_quit`, `background_timeout`)
-- `time_in_phase_ms`
+#### `shadow_battle_abandoned` (Phase 2)
+Phase 1 folds the abandon signal into `shadow_battle_completed` with `outcome=abandon` + `abandon_reason`. Phase 2 will split this into a dedicated event with `abandoned_at_phase` and `time_in_phase_ms`.
 
 ---
 

@@ -52,6 +52,12 @@ namespace Kindrith.ShadowBattle
             _started = true;
         }
 
+        public void Resume(int backgroundDurationMs)
+        {
+            if (!_started || _complete) return;
+            _startMs += backgroundDurationMs;
+        }
+
         public void Tick()
         {
             if (!_started || _complete) return;

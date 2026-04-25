@@ -73,7 +73,7 @@ namespace Kindrith.UI
             titleText.fontSize = 56;
             titleText.color = _palette.Hearth;
             titleText.alignment = TextAnchor.MiddleCenter;
-            titleText.text = "Kindrith";
+            titleText.text = Kindrith.Core.Strings.AppTitle;
 
             _resistButton = ResistButton.Create(canvasGo.transform, _palette);
             _resistButton.Clicked += OnResistClicked;

@@ -90,7 +90,8 @@ namespace Kindrith.Tests.PlayMode
             // 2. shadow_battle_started
             bus.Emit("shadow_battle_started", new Dictionary<string, object>
             {
-                ["archetype"] = "permission_giver",
+                ["battle_id"] = "test_battle",
+                ["demon_archetype"] = "permission_giver",
                 ["trigger"] = "user_resist_tap",
             });
 
@@ -119,7 +120,7 @@ namespace Kindrith.Tests.PlayMode
             // Phase 2 → 2 counters via DialogueRunner.
             var tree = BuildPhase2Tree();
             var runner = new DialogueRunner(tree, clock);
-            var phase2 = new Phase2Controller(runner, sm.Context, emitter, sm.Advance);
+            var phase2 = new Phase2Controller(runner, sm.Context, emitter, clock, sm.Advance);
             phase2.Start();
             phase2.Choose(0);   // Counter at node_0
             phase2.Tick();      // node_1a → node_2 (auto-advance)

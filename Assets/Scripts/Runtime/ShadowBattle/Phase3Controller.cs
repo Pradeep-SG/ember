@@ -43,6 +43,14 @@ namespace Kindrith.ShadowBattle
             _sequencer.Start();
         }
 
+        // Re-arm after a background pause so elapsed-since-Start excludes the bg duration.
+        public void Resume(int backgroundDurationMs)
+        {
+            if (!_running) return;
+            _startMs += backgroundDurationMs;
+            _sequencer.Resume(backgroundDurationMs);
+        }
+
         public void Tick()
         {
             if (!_running) return;
@@ -63,7 +71,8 @@ namespace Kindrith.ShadowBattle
         {
             _emitter.Emit("shadow_battle_finisher_beat", new Dictionary<string, object>
             {
-                ["beat"] = beat.ToString(),
+                ["battle_id"] = _context.BattleId,
+                ["beat_index"] = (int)beat,
                 ["landed"] = landed,
                 ["offset_ms"] = offsetMs,
             });

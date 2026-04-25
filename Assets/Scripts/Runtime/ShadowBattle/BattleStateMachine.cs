@@ -19,6 +19,7 @@ namespace Kindrith.ShadowBattle
         public BattleContext Context { get; private set; }
 
         public event Action<BattlePhase, BattlePhase> Transitioned;
+        public event Action<int> Resumed; // bg duration ms — listeners re-arm phase clocks
 
         public void StartBattle(ArchetypeId archetype)
         {
@@ -55,7 +56,17 @@ namespace Kindrith.ShadowBattle
             {
                 Abandon("background_timeout");
             }
-            // Below threshold: production wires the Resume sheet (WP-08).
+            // Below threshold: the UI layer shows ResumeOrAbandonSheet and routes user
+            // choice to Resume(durMs) or Abandon("user_chose_abandon").
+        }
+
+        // Called when the player taps Resume on the sub-60s sheet. Re-arms phase clocks
+        // by signaling subscribers (controllers) with the background duration to add to
+        // their start anchors. Idle is a no-op.
+        public void Resume(int backgroundDurationMs)
+        {
+            if (Current == BattlePhase.Idle) return;
+            Resumed?.Invoke(backgroundDurationMs);
         }
 
         static BattlePhase NextPhase(BattlePhase from)
@@ -82,9 +93,10 @@ namespace Kindrith.ShadowBattle
 
                 var completedParams = new Dictionary<string, object>
                 {
+                    ["battle_id"] = Context.BattleId,
                     ["outcome"] = Context.Outcome.ToString().ToLowerInvariant(),
-                    ["beats_landed"] = Context.BeatsLandedInPhase3,
-                    ["beads_remaining"] = Context.DemonBeads != null ? Context.DemonBeads.Remaining : 0,
+                    ["phase3_beats_landed"] = Context.BeatsLandedInPhase3,
+                    ["final_beads_extinguished"] = Context.DemonBeads != null && Context.DemonBeads.Extinguished,
                 };
                 if (abandonReason != null) completedParams["abandon_reason"] = abandonReason;
                 _emitter.Emit("shadow_battle_completed", completedParams);
@@ -106,7 +118,8 @@ namespace Kindrith.ShadowBattle
 
             _emitter.Emit("shadow_battle_phase_entered", new Dictionary<string, object>
             {
-                ["phase"] = to.ToString(),
+                ["battle_id"] = Context != null ? Context.BattleId : null,
+                ["phase"] = to.ToString().ToLowerInvariant(),
                 ["entry_context"] = entryContext,
             });
         }

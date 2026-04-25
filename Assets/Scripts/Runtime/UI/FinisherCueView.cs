@@ -107,14 +107,14 @@ namespace Kindrith.UI
 
             if (elapsedMs < 1_000)
             {
-                instr = "Get ready...";
+                instr = Kindrith.Core.Strings.FinisherGetReady;
                 float t = elapsedMs / 1_000f;
                 scale = Mathf.Lerp(0.4f, 1f, t);
                 color = _palette.Bone;
             }
             else if (elapsedMs < 1_500)
             {
-                instr = "TAP";
+                instr = Kindrith.Core.Strings.FinisherTap;
                 scale = 1f;
                 color = _palette.Hearth;
             }
@@ -127,26 +127,26 @@ namespace Kindrith.UI
             }
             else if (elapsedMs < 3_000)
             {
-                instr = "TAP";
+                instr = Kindrith.Core.Strings.FinisherTap;
                 scale = 0.4f;
                 color = _palette.Hearth;
             }
             else if (elapsedMs < 4_000)
             {
-                instr = "Hold soon...";
+                instr = Kindrith.Core.Strings.FinisherHoldSoon;
                 scale = 0.4f;
                 color = _palette.Bone;
             }
             else if (elapsedMs < 4_800)
             {
-                instr = _holdActive ? "...keep holding..." : "HOLD";
+                instr = _holdActive ? Kindrith.Core.Strings.FinisherKeepHolding : Kindrith.Core.Strings.FinisherHold;
                 float t = (elapsedMs - 4_000f) / 800f;
                 scale = Mathf.Lerp(0.4f, 1f, t);
                 color = _palette.Hearth;
             }
             else
             {
-                instr = "RELEASE";
+                instr = Kindrith.Core.Strings.FinisherRelease;
                 scale = 1f;
                 color = _palette.Hearth;
             }

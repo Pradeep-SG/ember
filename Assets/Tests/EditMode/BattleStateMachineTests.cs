@@ -118,7 +118,7 @@ namespace Kindrith.Tests.EditMode
 
             var phase2Entry = emitter.Events.Last(e =>
                 e.name == "shadow_battle_phase_entered" &&
-                e.parameters.TryGetValue("phase", out var p) && p.ToString() == "Phase2");
+                e.parameters.TryGetValue("phase", out var p) && p.ToString() == "phase2");
 
             Assert.IsTrue(phase2Entry.parameters["entry_context"] is IDictionary<string, object>);
             var entryCtx = (IDictionary<string, object>)phase2Entry.parameters["entry_context"];
@@ -134,7 +134,7 @@ namespace Kindrith.Tests.EditMode
 
             var phase1Entry = emitter.Events.Last(e =>
                 e.name == "shadow_battle_phase_entered" &&
-                e.parameters.TryGetValue("phase", out var p) && p.ToString() == "Phase1");
+                e.parameters.TryGetValue("phase", out var p) && p.ToString() == "phase1");
 
             var entryCtx = (IDictionary<string, object>)phase1Entry.parameters["entry_context"];
             Assert.IsFalse(entryCtx.ContainsKey("beads_remaining"));

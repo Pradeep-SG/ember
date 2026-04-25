@@ -46,6 +46,13 @@ namespace Kindrith.ShadowBattle
             _running = true;
         }
 
+        // Re-arm after a background pause so elapsed-since-Start excludes the bg duration.
+        public void Resume(int backgroundDurationMs)
+        {
+            if (!_running) return;
+            _startMs += backgroundDurationMs;
+        }
+
         public void Tick()
         {
             if (!_running) return;
@@ -70,10 +77,10 @@ namespace Kindrith.ShadowBattle
 
             _emitter.Emit("shadow_battle_tap_registered", new Dictionary<string, object>
             {
-                ["grade"] = grade.ToString(),
+                ["battle_id"] = _context.BattleId,
+                ["grade"] = grade.ToString().ToLowerInvariant(),
                 ["offset_ms"] = offsetMs,
                 ["cycle_index"] = _breathingClock.CycleIndex,
-                ["beads_remaining"] = _beads.Remaining,
             });
         }
     }

@@ -32,6 +32,13 @@ namespace Kindrith.Dialogue
         public event Action<DialogueOption, OptionClass> OptionChosen;
         public event Action Completed;
 
+        // Re-arm after a background pause so elapsed-since-EnterNode excludes the bg duration.
+        public void Resume(int backgroundDurationMs)
+        {
+            if (_complete) return;
+            _nodeEnteredMs += backgroundDurationMs;
+        }
+
         public void Tick()
         {
             if (_complete || _current == null) return;

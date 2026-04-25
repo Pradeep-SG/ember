@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,7 +18,8 @@ namespace Kindrith.UI
         DefaultEnvelopeProvider _envelope;
         NdjsonAnalyticsSink _sink;
         HomeShell _homeShell;
-        float _foregroundStartS;
+        ResumeOrAbandonSheet _resumeSheet;
+        DateTime _lastAppOpenedUtc;
 
         public AnalyticsBus Analytics => _analytics;
         public BattleStore Store => _store;
@@ -30,7 +32,7 @@ namespace Kindrith.UI
             _sink = new NdjsonAnalyticsSink();
             _analytics = new AnalyticsBus(_sink, _envelope);
             _store = new BattleStore();
-            _foregroundStartS = Time.realtimeSinceStartup;
+            _lastAppOpenedUtc = DateTime.UtcNow;
 
             EnsureEventSystem();
 
@@ -74,11 +76,7 @@ namespace Kindrith.UI
 
             if (_battleRunner == null)
             {
-                _analytics.Emit("shadow_battle_started", new Dictionary<string, object>
-                {
-                    ["archetype"] = archetype.ToString().ToLowerInvariant(),
-                    ["trigger"] = "user_resist_tap",
-                });
+                UnityEngine.Debug.LogWarning("Boot.OnResistRequested: BattleRunner is null — skipping battle start.");
                 return;
             }
 
@@ -106,22 +104,57 @@ namespace Kindrith.UI
             DontDestroyOnLoad(go);
         }
 
+        DateTime _backgroundedAtUtc;
+
         void OnApplicationPause(bool paused)
         {
             if (_analytics == null) return;
             if (paused)
             {
-                var foregroundMs = (long)((Time.realtimeSinceStartup - _foregroundStartS) * 1000f);
+                _backgroundedAtUtc = DateTime.UtcNow;
+                var foregroundMs = ComputeForegroundMs(_lastAppOpenedUtc, _backgroundedAtUtc);
                 _analytics.Emit("app_backgrounded", new Dictionary<string, object>
                 {
                     ["foreground_duration_ms"] = foregroundMs,
-                    ["on_screen"] = "home",
+                    ["on_screen"] = _battleRunner != null && _battleRunner.IsActive ? "battle" : "home",
                 });
             }
             else
             {
-                _foregroundStartS = Time.realtimeSinceStartup;
+                int bgMs = 0;
+                if (_backgroundedAtUtc != default)
+                {
+                    bgMs = (int)Math.Max(0, (DateTime.UtcNow - _backgroundedAtUtc).TotalMilliseconds);
+                }
+
+                if (_battleRunner != null && _battleRunner.IsActive)
+                {
+                    _battleRunner.HandleForegroundResume(bgMs, EnsureResumeSheet());
+                }
+
+                _lastAppOpenedUtc = DateTime.UtcNow;
+                _analytics.Emit("app_opened", new Dictionary<string, object>
+                {
+                    ["resume_reason"] = "foreground_resume",
+                    ["time_since_last_open_ms"] = (long)bgMs,
+                });
             }
+        }
+
+        // Public for unit testing — pin foreground_duration_ms to wall-clock UTC, not realtime.
+        public static long ComputeForegroundMs(DateTime appOpenedUtc, DateTime backgroundedUtc)
+        {
+            var ms = (long)(backgroundedUtc - appOpenedUtc).TotalMilliseconds;
+            return ms < 0 ? 0 : ms;
+        }
+
+        ResumeOrAbandonSheet EnsureResumeSheet()
+        {
+            if (_resumeSheet != null) return _resumeSheet;
+            var go = new GameObject("ResumeOrAbandonSheet");
+            go.transform.SetParent(transform, false);
+            _resumeSheet = go.AddComponent<ResumeOrAbandonSheet>();
+            return _resumeSheet;
         }
     }
 }

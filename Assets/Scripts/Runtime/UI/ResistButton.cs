@@ -33,7 +33,7 @@ namespace Kindrith.UI
             label.fontSize = 48;
             label.color = palette.Bone;
             label.alignment = TextAnchor.MiddleCenter;
-            label.text = "Resist";
+            label.text = Kindrith.Core.Strings.ResistButton;
 
             var component = go.AddComponent<ResistButton>();
             go.GetComponent<Button>().onClick.AddListener(component.Fire);
