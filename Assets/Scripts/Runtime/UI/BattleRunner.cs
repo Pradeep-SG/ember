@@ -209,6 +209,7 @@ namespace Kindrith.UI
 
         void OnPhase1Complete()
         {
+            _sm.Advance();
             DismissPhase1();
             BuildPhase2();
         }
@@ -238,6 +239,7 @@ namespace Kindrith.UI
 
         void OnPhase2Complete()
         {
+            _sm.Advance();
             _dialoguePanel?.Dismiss();
             _dialoguePanel = null;
             BuildPhase3();
@@ -254,6 +256,7 @@ namespace Kindrith.UI
 
         void OnPhase3Complete()
         {
+            _sm.Advance();
             _finisherCueView?.Dismiss();
             _finisherCueView = null;
             BuildRewardScreen();
