@@ -15,7 +15,7 @@ namespace Kindrith.Persistence
 
         protected SingletonStore(string fileName, Action<T> stampUpdatedAt)
         {
-            _path = Path.Combine(Application.persistentDataPath, "kindrith", fileName);
+            _path = System.IO.Path.Combine(Application.persistentDataPath, "kindrith", fileName);
             _stampUpdatedAt = stampUpdatedAt;
         }
 
