@@ -25,9 +25,11 @@ namespace Kindrith.Dialogue
         static readonly Regex ArchetypeHeading =
             new Regex(@"^###\s+\d+\.\d+\s+Archetype\s+\d+\s*[—-]\s*""([^""]+)""\s*$", RegexOptions.Compiled);
 
-        // **Node_0 (opening)**  or  **Node_1a** (after Counter A)  etc.
+        // Matches both **Node_0 (opening)** (parens inside bold) and **Node_1a** (after Counter A)
+        // (parens after bold). Anchored at start of line; nothing after the captured id needs to
+        // satisfy a closing **, since both shapes appear in the source markdown.
         static readonly Regex NodeHeading =
-            new Regex(@"^\*\*Node_(\w+)\*\*", RegexOptions.Compiled);
+            new Regex(@"^\*\*Node_(\w+)", RegexOptions.Compiled);
 
         // > *"demon line"* [optional stage direction]
         static readonly Regex DemonLineRx =
