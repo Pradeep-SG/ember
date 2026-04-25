@@ -8,11 +8,13 @@ One-paragraph thesis: Kindrith is a warm, stylized world where the visual fideli
 
 ## References
 
-Three reference images live in `art-direction/references/` — Alto's Odyssey, Monument Valley, and one additional chosen by Pradeep (see README there). Look to them for:
+Three original mood-board images live in `art-direction/references/`, generated to the Kindrith palette and owned outright (no third-party licensing). Look to them for:
 
-- **Alto's Odyssey** — atmospheric color, silhouette-against-sky framing, parallax depth.
-- **Monument Valley** — flat-shaded geometry, clear silhouettes, calm palette discipline.
-- **Third (TBD)** — stakes the style we take from outside the obvious (see references README for candidates).
+- **`01-realm.png` — Realm at rest.** Environment mood, scale of focal structures, ember-mote density, path-as-progress language.
+- **`02-shadow-battle.png` — Shadow Battle confrontation.** Warden silhouette, Demon shape language, arena staging, who-is-who readability.
+- **`03-hearth.png` — Hearth interior.** Hearth-as-room's-source-of-meaning, stepped stone construction, breathing warmth, pointed-arch continuity with the shrine in `01`.
+
+Full extraction notes per reference are in `art-direction/references/README.md`. Update both files together when references change.
 
 ---
 
