@@ -17,14 +17,11 @@ namespace Kindrith.Persistence
 
             var tmp = path + ".tmp";
             var json = JsonUtility.ToJson(entity, prettyPrint);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
 
             using (var fs = File.Create(tmp))
             {
-                using (var writer = new StreamWriter(fs))
-                {
-                    writer.Write(json);
-                    writer.Flush();
-                }
+                fs.Write(bytes, 0, bytes.Length);
                 fs.Flush(flushToDisk: true);
             }
 
