@@ -36,6 +36,19 @@ namespace Kindrith.UI
             _homeShell.Initialize(_store);
             _homeShell.ResistRequested += OnResistRequested;
 
+            // Fall back to a scene lookup if the SerializeField wiring didn't survive a
+            // scene reimport. The Bootstrap.unity YAML wires this directly, but if the
+            // reference comes back null we still want a working build.
+            if (_battleRunner == null)
+            {
+                _battleRunner = FindAnyObjectByType<BattleRunner>();
+                if (_battleRunner == null)
+                {
+                    UnityEngine.Debug.LogWarning(
+                        "Boot: BattleRunner not found in scene. Resist tap will emit shadow_battle_started but won't play a battle.");
+                }
+            }
+
             if (_battleRunner != null)
             {
                 _battleRunner.Initialize(_analytics, _store);
