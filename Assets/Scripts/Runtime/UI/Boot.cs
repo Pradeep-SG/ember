@@ -36,23 +36,22 @@ namespace Kindrith.UI
             _homeShell.Initialize(_store);
             _homeShell.ResistRequested += OnResistRequested;
 
-            // Fall back to a scene lookup if the SerializeField wiring didn't survive a
-            // scene reimport. The Bootstrap.unity YAML wires this directly, but if the
-            // reference comes back null we still want a working build.
+            UnityEngine.Debug.Log($"Boot.Awake: _battleRunner SerializeField = {(_battleRunner == null ? "NULL" : _battleRunner.name)}");
+
             if (_battleRunner == null)
             {
                 _battleRunner = FindAnyObjectByType<BattleRunner>();
-                if (_battleRunner == null)
-                {
-                    UnityEngine.Debug.LogWarning(
-                        "Boot: BattleRunner not found in scene. Resist tap will emit shadow_battle_started but won't play a battle.");
-                }
+                UnityEngine.Debug.Log($"Boot.Awake: FindAnyObjectByType<BattleRunner>() = {(_battleRunner == null ? "NULL" : _battleRunner.name)}");
             }
 
             if (_battleRunner != null)
             {
                 _battleRunner.Initialize(_analytics, _store);
                 _battleRunner.BattleEnded += OnBattleEnded;
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning("Boot.Awake: BattleRunner not found — Resist will emit but not play a battle.");
             }
         }
 
@@ -67,10 +66,10 @@ namespace Kindrith.UI
 
         void OnResistRequested(ArchetypeId archetype)
         {
+            UnityEngine.Debug.Log($"Boot.OnResistRequested: archetype={archetype}, _battleRunner={(_battleRunner == null ? "NULL" : _battleRunner.name)}");
+
             if (_battleRunner == null)
             {
-                // No battle wiring — emit the trigger event so the analytics surface still
-                // reflects the player's intent, then return to the home shell.
                 _analytics.Emit("shadow_battle_started", new Dictionary<string, object>
                 {
                     ["archetype"] = archetype.ToString().ToLowerInvariant(),
@@ -80,7 +79,9 @@ namespace Kindrith.UI
             }
 
             _homeShell?.SetVisible(false);
+            UnityEngine.Debug.Log("Boot.OnResistRequested: calling BattleRunner.StartBattle");
             _battleRunner.StartBattle(archetype);
+            UnityEngine.Debug.Log($"Boot.OnResistRequested: after StartBattle, IsActive={_battleRunner.IsActive}");
         }
 
         void OnBattleEnded()

@@ -89,6 +89,7 @@ namespace Kindrith.UI
         void OnResistClicked()
         {
             var archetype = _archetypePicker != null ? _archetypePicker.Selected : ArchetypeId.PermissionGiver;
+            UnityEngine.Debug.Log($"HomeShell.OnResistClicked: archetype={archetype}, listeners={ResistRequested?.GetInvocationList().Length ?? 0}");
             ResistRequested?.Invoke(archetype);
         }
     }
