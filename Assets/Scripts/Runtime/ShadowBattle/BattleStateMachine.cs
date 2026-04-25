@@ -76,15 +76,28 @@ namespace Kindrith.ShadowBattle
             Current = to;
             Transitioned?.Invoke(from, to);
 
+            if (to == BattlePhase.Outcome && Context != null)
+            {
+                Context.Outcome = OutcomeRouter.Resolve(Context);
+
+                var completedParams = new Dictionary<string, object>
+                {
+                    ["outcome"] = Context.Outcome.ToString().ToLowerInvariant(),
+                    ["beats_landed"] = Context.BeatsLandedInPhase3,
+                    ["beads_remaining"] = Context.DemonBeads != null ? Context.DemonBeads.Remaining : 0,
+                };
+                if (abandonReason != null) completedParams["abandon_reason"] = abandonReason;
+                _emitter.Emit("shadow_battle_completed", completedParams);
+                return;
+            }
+
+            // Idle → don't emit (e.g., on Outcome → Idle wrap-up).
+            if (to == BattlePhase.Idle) return;
+
             var entryContext = new Dictionary<string, object>();
             if (to == BattlePhase.Phase2 && Context != null)
             {
                 entryContext["beads_remaining"] = Context.DemonBeads.Remaining;
-            }
-            if (to == BattlePhase.Outcome && Context != null)
-            {
-                Context.Outcome = OutcomeRouter.Resolve(Context);
-                entryContext["outcome"] = Context.Outcome.ToString();
             }
             if (abandonReason != null)
             {

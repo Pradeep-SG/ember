@@ -1,0 +1,14 @@
+{
+    "name": "Kindrith.Persistence",
+    "rootNamespace": "Kindrith.Persistence",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
