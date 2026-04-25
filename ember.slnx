@@ -1,6 +1,8 @@
 ﻿<Solution>
   <Project Path="Kindrith.Core.csproj" />
   <Project Path="Kindrith.Breathing.csproj" />
+  <Project Path="Kindrith.Dialogue.csproj" />
   <Project Path="Kindrith.ShadowBattle.csproj" />
   <Project Path="Tests.EditMode.csproj" />
+  <Project Path="Tests.PlayMode.csproj" />
 </Solution>
