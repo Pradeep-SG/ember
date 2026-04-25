@@ -14,6 +14,8 @@ namespace Kindrith.Breathing
 
         BreathingClock _breathing;
 
+        public BreathingClock Clock => _breathing;
+
         void Awake()
         {
             if (_palette == null) _palette = ScriptableObject.CreateInstance<Palette>();
