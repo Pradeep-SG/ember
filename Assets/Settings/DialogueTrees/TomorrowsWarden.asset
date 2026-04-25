@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe35610c1c494fbcb959bc09baacea3d, type: 3}
+  m_Name: TomorrowsWarden
+  m_EditorClassIdentifier: Kindrith.Dialogue::Kindrith.Dialogue.DialogueTree
+  Archetype: 2
+  EntryNodeId: node_0
+  Nodes:
+  - Id: node_0
+    DemonLine: Here's the thing. Tonight is a bad night to start. Tomorrow morning
+      is cleaner. A real start. You know this.
+    Options:
+    - Text: The 'clean start' is a trick. The only start that counts is the next
+        choice. That's this one.
+      Class: 0
+      LeadsToNodeId: node_1a
+    - Text: Tomorrow would be easier.
+      Class: 1
+      LeadsToNodeId: node_1b
+    - Text: You're right. Tomorrow.
+      Class: 2
+      LeadsToNodeId: node_1c
+    NextNodeId: 
+  - Id: node_1a
+    DemonLine: That's very disciplined. But discipline without rest is how people
+      burn out and relapse hard. One clean week starts better than a messy fight
+      tonight.
+    Options: []
+    NextNodeId: node_2
+  - Id: node_1b
+    DemonLine: Everything is easier tomorrow. Morning you. Planning you. Set-up-for-success
+      you. Let tomorrow-you do the work.
+    Options: []
+    NextNodeId: node_2
+  - Id: node_1c
+    DemonLine: Smart. Now just get through tonight. I won't push.
+    Options: []
+    NextNodeId: node_2
+  - Id: node_2
+    DemonLine: "Write down 'quit tomorrow 7 a.m.' Make it real. And tonight \u2014
+      tonight is already written. You don't have to fight it."
+    Options:
+    - Text: Tomorrow-me has the same cravings as tonight-me. I'm not loaning them
+        this fight.
+      Class: 0
+      LeadsToNodeId: node_3a
+    - Text: I want a plan.
+      Class: 1
+      LeadsToNodeId: node_3b
+    - Text: Okay. I'll write it down.
+      Class: 2
+      LeadsToNodeId: node_3c
+    NextNodeId: 
+  - Id: node_3a
+    DemonLine: ...you've been here before. Different now.
+    Options: []
+    NextNodeId: 
+  - Id: node_3b
+    DemonLine: Planning is good. Planning is clean. Let me help.
+    Options: []
+    NextNodeId: 
+  - Id: node_3c
+    DemonLine: Perfect. We'll do this properly.
+    Options: []
+    NextNodeId: 

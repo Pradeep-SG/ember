@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe35610c1c494fbcb959bc09baacea3d, type: 3}
+  m_Name: PermissionGiver
+  m_EditorClassIdentifier: Kindrith.Dialogue::Kindrith.Dialogue.DialogueTree
+  Archetype: 0
+  EntryNodeId: node_0
+  Nodes:
+  - Id: node_0
+    DemonLine: You've been so disciplined. One won't undo any of it. You know that,
+      don't you?
+    Options:
+    - Text: One is how every streak ends. I'm not starting that math again.
+      Class: 0
+      LeadsToNodeId: node_1a
+    - Text: Maybe. I don't know.
+      Class: 1
+      LeadsToNodeId: node_1b
+    - Text: You're right. I have been disciplined.
+      Class: 2
+      LeadsToNodeId: node_1c
+    NextNodeId: 
+  - Id: node_1a
+    DemonLine: Okay. I hear you. But you're not addicted anymore, really. This isn't
+      the old pattern. It's different now.
+    Options: []
+    NextNodeId: node_2
+  - Id: node_1b
+    DemonLine: "Of course you don't know. That's what I'm here for. Just weigh it
+      \u2014 one, only one, and the streak stays if you want it to."
+    Options: []
+    NextNodeId: node_2
+  - Id: node_1c
+    DemonLine: You have. And you deserve some ease. The work of quitting shouldn't
+      also be the work of never resting.
+    Options: []
+    NextNodeId: node_2
+  - Id: node_2
+    DemonLine: Look, tomorrow morning you'll still be the person who did the hard
+      thing for this many days. Nothing changes that. Nothing. One doesn't change
+      that.
+    Options:
+    - Text: The person I'm becoming wouldn't pick one up. That's the thing that changes.
+      Class: 0
+      LeadsToNodeId: node_3a
+    - Text: I just want to get past this moment.
+      Class: 1
+      LeadsToNodeId: node_3b
+    - Text: You're right. Nothing changes. Okay.
+      Class: 2
+      LeadsToNodeId: node_3c
+    NextNodeId: 
+  - Id: node_3a
+    DemonLine: ...That's a stronger answer than I expected.
+    Options: []
+    NextNodeId: 
+  - Id: node_3b
+    DemonLine: Past this moment, sure. Past the next moment too. You have options.
+    Options: []
+    NextNodeId: 
+  - Id: node_3c
+    DemonLine: Good. Let's step out for some air.
+    Options: []
+    NextNodeId: 
