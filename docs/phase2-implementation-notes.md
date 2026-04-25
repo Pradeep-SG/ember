@@ -62,7 +62,19 @@ Added `chain_id`, `demon_id`, and `updated_at` fields to `BattleRecord`. Phase 1
 
 ## Per-WP deviations from the brief
 
-(WP-10 onward will append here.)
+### WP-10 — Hygiene
+
+**Strings.cs lives in Kindrith.Core, not Kindrith.UI.** Brief specified `namespace Kindrith.UI`, but `RewardScreen` (in Kindrith.ShadowBattle) needs to consume the same constants and Kindrith.UI already references Kindrith.ShadowBattle — putting Strings in UI would create a cycle. Core has no dependencies, so it's the structurally correct home. File path stays `Assets/Scripts/Runtime/Core/Strings.cs`; namespace is `Kindrith.Core`.
+
+**Phase 1 emit contract aligned with implementation.** The original analytics-taxonomy.md §2.5 listed many keys (`total_duration_ms`, `phase1_taps_*`, `clarity_awarded`, `chain_id`, `demon_id`, etc.) that Phase 1 doesn't track. WP-10 splits each event table into "P1 today (audit-pinned)" and "Phase 2 expansion" subsets. The audit test in `EditMode/P1ParameterAuditTests.cs` only enforces the P1-today set. Code-side renames done in this WP: `archetype` → `demon_archetype`, `beats_landed` → `phase3_beats_landed`, `beat` → `beat_index`. Phase enum values now lowercase via `BattlePhase.ToString().ToLowerInvariant()`. `battle_id` added to every shadow-battle emit. The dead `shadow_battle_started` emit in `Boot.OnResistRequested` (only fired when `_battleRunner == null`, didn't follow the contract) is removed; that path now logs a warning.
+
+**`shadow_battle_abandoned` is folded into `shadow_battle_completed`.** Phase 1 emits one terminal event per battle. `outcome=abandon` plus optional `abandon_reason` carries the abandon signal. The dedicated `shadow_battle_abandoned` event is reclassified as Phase 2 work in the taxonomy doc — it'll split out when Phase 2 adds `abandoned_at_phase` + `time_in_phase_ms`.
+
+**`Phase2Controller` constructor now takes `IClock`.** Required for `latency_ms` computation on `shadow_battle_dialogue_choice`. `BattleRunner` and the WP-08 happy-path test pass through the existing `SystemClock` / `FakeClock`.
+
+**`DEBUG_BATTLE` define is set on `Standalone` only.** Brief asked for "the Editor and a dedicated dev iOS scheme." The Editor uses Standalone defines, so that's covered. iOS dev/release scheme split doesn't exist yet (the build pipeline ships in a later WP); the iOS define gets added at scheme creation time. Phase 3 backlog tracks this.
+
+**CI flake (exit-139) triage outcome.** game-ci hadn't published the 6000.4.3f1 (our local) image at WP-10 time — pin stays at 6000.4.2f1. The flake didn't reproduce on the WP-10 PR's CI run, but historical recurrence rate makes a clean run inconclusive. Deferred bump to a focused follow-up once a newer image lands; `gh run rerun <id>` remains the workaround for the rare exit-139 occurrence.
 
 ## Lessons from Phase 1 worth carrying forward
 

@@ -71,7 +71,7 @@ namespace Kindrith.UI
             _analytics.Emit("shadow_battle_started", new Dictionary<string, object>
             {
                 ["battle_id"] = _sm.Context.BattleId,
-                ["archetype"] = archetype.ToString().ToLowerInvariant(),
+                ["demon_archetype"] = archetype.ToString().ToLowerInvariant(),
                 ["trigger"] = "user_resist_tap",
             });
 
@@ -119,7 +119,7 @@ namespace Kindrith.UI
             label.fontSize = 36;
             label.color = _palette.Bone;
             label.alignment = TextAnchor.MiddleCenter;
-            label.text = "X";
+            label.text = Kindrith.Core.Strings.AbandonButtonLabel;
 
             btnGo.GetComponent<Button>().onClick.AddListener(AbandonBattle);
         }
@@ -142,6 +142,43 @@ namespace Kindrith.UI
 
             _sm.Abandon("user_quit");
             BuildRewardScreen();
+        }
+
+        // Boot calls this on foreground while a battle is active. >= 60s background → SM
+        // auto-Abandons. < 60s → show the sheet; user picks Resume (re-arms clocks) or
+        // Abandon ("user_chose_abandon").
+        public void HandleForegroundResume(int backgroundDurationMs, ResumeOrAbandonSheet sheet)
+        {
+            if (_sm == null || _sm.Current == BattlePhase.Idle || _sm.Current == BattlePhase.Outcome) return;
+
+            if (backgroundDurationMs >= BattleStateMachine.BackgroundAbandonThresholdMs)
+            {
+                _sm.HandleBackgroundResume(backgroundDurationMs);
+                BuildRewardScreen();
+                return;
+            }
+
+            if (sheet == null)
+            {
+                ResumeBattle(backgroundDurationMs);
+                return;
+            }
+
+            sheet.ResumeChosen += () => ResumeBattle(backgroundDurationMs);
+            sheet.AbandonChosen += () =>
+            {
+                _sm.Abandon("user_chose_abandon");
+                BuildRewardScreen();
+            };
+            sheet.Show(backgroundDurationMs);
+        }
+
+        void ResumeBattle(int backgroundDurationMs)
+        {
+            _phase1?.Resume(backgroundDurationMs);
+            _phase3?.Resume(backgroundDurationMs);
+            _dialogueRunner?.Resume(backgroundDurationMs);
+            _sm?.Resume(backgroundDurationMs);
         }
 
         void Update()
@@ -232,7 +269,7 @@ namespace Kindrith.UI
                 return;
             }
             _dialogueRunner = new DialogueRunner(tree, _clock);
-            _phase2 = new Phase2Controller(_dialogueRunner, _sm.Context, _emitter, OnPhase2Complete);
+            _phase2 = new Phase2Controller(_dialogueRunner, _sm.Context, _emitter, _clock, OnPhase2Complete);
             _phase2.Start();
             _dialoguePanel = DialoguePanel.Create(transform, _palette, _dialogueRunner);
         }

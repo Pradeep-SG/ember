@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Kindrith.Core;
 using Kindrith.Dialogue;
 using Kindrith.ShadowBattle;
 
@@ -47,7 +48,7 @@ namespace Kindrith.Tests.EditMode
         public void LossCopy_HeaderMatchesSpec()
         {
             // Spec §5.2 — the header must be exactly this string. No shaming, no exclamation.
-            Assert.AreEqual("The Demon is strong today.", RewardScreen.LossHeader);
+            Assert.AreEqual("The Demon is strong today.", Strings.RewardLossHeader);
         }
 
         [Test]
@@ -56,13 +57,13 @@ namespace Kindrith.Tests.EditMode
             // Spec §5.2 — exact body copy. Tests guard against accidental edits.
             Assert.AreEqual(
                 "You showed up. That is the hardest part. Tomorrow you fight again.",
-                RewardScreen.LossBody);
+                Strings.RewardLossBody);
         }
 
         [Test]
         public void AbandonCopy_HeaderMatchesSpec()
         {
-            Assert.AreEqual("Stepped back.", RewardScreen.AbandonHeader);
+            Assert.AreEqual("Stepped back.", Strings.RewardAbandonHeader);
         }
 
         [Test]
@@ -70,7 +71,7 @@ namespace Kindrith.Tests.EditMode
         {
             Assert.AreEqual(
                 "The battle waits. Come back when you're ready.",
-                RewardScreen.AbandonBody);
+                Strings.RewardAbandonBody);
         }
     }
 }

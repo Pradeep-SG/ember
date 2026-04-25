@@ -58,7 +58,7 @@ namespace Kindrith.Tests.PlayMode
 
             var phase2Entry = emitter.Events.Last(e =>
                 e.name == "shadow_battle_phase_entered" &&
-                e.parameters.TryGetValue("phase", out var p) && p.ToString() == "Phase2");
+                e.parameters.TryGetValue("phase", out var p) && p.ToString() == "phase2");
             var entryCtx = (IDictionary<string, object>)phase2Entry.parameters["entry_context"];
             Assert.AreEqual(5, entryCtx["beads_remaining"]);
 

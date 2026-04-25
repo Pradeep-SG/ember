@@ -11,19 +11,7 @@ namespace Kindrith.ShadowBattle
     // Production reward UI lives in WP-08+ alongside the home shell.
     public sealed class RewardScreen : MonoBehaviour
     {
-        // Spec §5 exact copy. Tests assert these match the spec — do not edit
-        // without aligning docs/phase1-shadow-battle-spec.md.
-        public const string CriticalWinHeader = "Critical Win.";
-        public const string WinHeader = "Win.";
-        public const string LossHeader = "The Demon is strong today.";
-        public const string LossBody = "You showed up. That is the hardest part. Tomorrow you fight again.";
-        public const string AbandonHeader = "Stepped back.";
-        public const string AbandonBody = "The battle waits. Come back when you're ready.";
-
-        public const string ClarityRewardLine = "Clarity +1";
-        public const string ShardRewardLine = "Shard of Bone";
-        public const string ReturnPrompt = "[Tap to return to the Realm]";
-
+        // Spec §5 / §6 exact copy now lives in Kindrith.Core.Strings; tests pin against it there.
         public const float AutoAdvanceSeconds = 3f;
 
         [SerializeField] Palette _palette;
@@ -110,28 +98,27 @@ namespace Kindrith.ShadowBattle
             {
                 case BattleOutcome.CriticalWin:
                 case BattleOutcome.Win:
-                    sb.AppendLine(ClarityRewardLine);
-                    sb.AppendLine(ShardRewardLine);
-                    if (Debug.isDebugBuild)
-                    {
-                        sb.AppendLine();
-                        sb.AppendLine(
-                            $"[debug] phase1ms={context.Phase1ElapsedMs} " +
-                            $"counters={context.CountersInPhase2} " +
-                            $"beats={context.BeatsLandedInPhase3} " +
-                            $"archetype={context.Archetype}");
-                    }
+                    sb.AppendLine(Strings.RewardClarity);
+                    sb.AppendLine(Strings.RewardShard);
+#if DEBUG_BATTLE
+                    sb.AppendLine();
+                    sb.AppendLine(
+                        $"[debug] phase1ms={context.Phase1ElapsedMs} " +
+                        $"counters={context.CountersInPhase2} " +
+                        $"beats={context.BeatsLandedInPhase3} " +
+                        $"archetype={context.Archetype}");
+#endif
                     break;
                 case BattleOutcome.Loss:
-                    sb.AppendLine(LossBody);
+                    sb.AppendLine(Strings.RewardLossBody);
                     break;
                 case BattleOutcome.Abandon:
-                    sb.AppendLine(AbandonBody);
+                    sb.AppendLine(Strings.RewardAbandonBody);
                     break;
             }
 
             sb.AppendLine();
-            sb.AppendLine(ReturnPrompt);
+            sb.AppendLine(Strings.RewardReturnPrompt);
             return sb.ToString();
         }
 
@@ -139,10 +126,10 @@ namespace Kindrith.ShadowBattle
         {
             switch (outcome)
             {
-                case BattleOutcome.CriticalWin: return CriticalWinHeader;
-                case BattleOutcome.Win: return WinHeader;
-                case BattleOutcome.Loss: return LossHeader;
-                case BattleOutcome.Abandon: return AbandonHeader;
+                case BattleOutcome.CriticalWin: return Strings.RewardCriticalWinHeader;
+                case BattleOutcome.Win: return Strings.RewardWinHeader;
+                case BattleOutcome.Loss: return Strings.RewardLossHeader;
+                case BattleOutcome.Abandon: return Strings.RewardAbandonHeader;
                 default: return string.Empty;
             }
         }

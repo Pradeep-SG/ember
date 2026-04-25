@@ -38,9 +38,11 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: .
-          # Pinned: game-ci hasn't published a 6000.4.3f1 image yet (our local
-          # Unity). 6000.4.2f1 is close enough to run tests against; bump when
-          # game-ci catches up with local.
+          # Pinned to match local Unity install. Intermittent exit-139 (Unity SIGSEGV
+          # on shutdown after tests pass) tracked in docs/phase2-implementation-notes.md
+          # under WP-10 flake triage. Bump deferred to a focused WP after game-ci
+          # publishes the 6000.4.3f1 image (WP-10 verified the published image set
+          # was still 6000.4.2f1 at run time).
           unityVersion: 6000.4.2f1
           testMode: all
           artifactsPath: test-results
