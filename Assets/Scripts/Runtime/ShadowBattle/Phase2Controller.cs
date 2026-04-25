@@ -1,0 +1,27 @@
+using System;
+
+namespace Kindrith.ShadowBattle
+{
+    // Auto-advancing stub for WP-04. Real dialogue runtime lands in WP-05.
+    public sealed class Phase2Controller
+    {
+        readonly Action _onComplete;
+        bool _running;
+
+        public Phase2Controller(Action onComplete)
+        {
+            _onComplete = onComplete ?? throw new ArgumentNullException(nameof(onComplete));
+        }
+
+        public bool IsRunning => _running;
+
+        public void Start() { _running = true; }
+
+        public void Tick()
+        {
+            if (!_running) return;
+            _running = false;
+            _onComplete();
+        }
+    }
+}

@@ -4,8 +4,10 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
+        "GUID:6dbb9528ab844bf5954217f00341e6ad",
         "GUID:cdbb4e12b8bf4fb88f653371511d399e",
-        "GUID:2fb6e1fc77f04a9685fad2d5283e7eed"
+        "GUID:2fb6e1fc77f04a9685fad2d5283e7eed",
+        "GUID:fffff3cf5f334e8f95c0d95dbe6ece50"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
