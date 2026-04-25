@@ -22,7 +22,7 @@ namespace Kindrith.Tests.PlayMode
             yield return null;
             yield return null;
 
-            var harness = Object.FindFirstObjectByType<BreathingHarness>();
+            var harness = Object.FindAnyObjectByType<BreathingHarness>();
             Assert.IsNotNull(harness, "BreathingHarness component missing from ShadowBattle scene");
             Assert.IsNotNull(harness.Clock, "BreathingHarness.Clock not initialized");
 
