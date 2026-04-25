@@ -41,6 +41,7 @@ namespace Kindrith.UI
         DialoguePanel _dialoguePanel;
         FinisherCueView _finisherCueView;
         RewardScreen _rewardScreen;
+        Canvas _abandonCanvas;
 
         DateTime _battleStartUtc;
 
@@ -77,7 +78,70 @@ namespace Kindrith.UI
             _phase1 = new Phase1Controller(
                 _clock, _bclock, new TapEvaluator(), _sm.Context.DemonBeads, _sm.Context, _emitter, OnPhase1Complete);
             BuildPhase1Visual();
+            BuildAbandonOverlay();
             _phase1.Start();
+        }
+
+        void BuildAbandonOverlay()
+        {
+            var canvasGo = new GameObject("AbandonCanvas",
+                typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            canvasGo.transform.SetParent(transform, false);
+            _abandonCanvas = canvasGo.GetComponent<Canvas>();
+            _abandonCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            // Above all phase canvases (Phase1=30, Dialogue=50, Finisher=60).
+            _abandonCanvas.sortingOrder = 90;
+
+            var scaler = canvasGo.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1080f, 1920f);
+            scaler.matchWidthOrHeight = 0.5f;
+
+            var btnGo = new GameObject("AbandonButton",
+                typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            btnGo.transform.SetParent(canvasGo.transform, false);
+            var rt = (RectTransform)btnGo.transform;
+            rt.anchorMin = new Vector2(1f, 1f);
+            rt.anchorMax = new Vector2(1f, 1f);
+            rt.pivot = new Vector2(1f, 1f);
+            rt.sizeDelta = new Vector2(80, 80);
+            rt.anchoredPosition = new Vector2(-24, -24);
+            btnGo.GetComponent<Image>().color = new Color(_palette.Duskwine.r, _palette.Duskwine.g, _palette.Duskwine.b, 0.7f);
+
+            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            labelGo.transform.SetParent(btnGo.transform, false);
+            var labelRt = (RectTransform)labelGo.transform;
+            labelRt.anchorMin = Vector2.zero;
+            labelRt.anchorMax = Vector2.one;
+            labelRt.sizeDelta = Vector2.zero;
+            var label = labelGo.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.fontSize = 36;
+            label.color = _palette.Bone;
+            label.alignment = TextAnchor.MiddleCenter;
+            label.text = "X";
+
+            btnGo.GetComponent<Button>().onClick.AddListener(AbandonBattle);
+        }
+
+        public void AbandonBattle()
+        {
+            if (_sm == null) return;
+            if (_sm.Current == BattlePhase.Idle || _sm.Current == BattlePhase.Outcome) return;
+
+            // Tear down active phase before transitioning, so the phase controllers can't
+            // race against the state machine on subsequent ticks.
+            _phase1 = null;
+            _phase2 = null;
+            _phase3 = null;
+            DismissPhase1();
+            _dialoguePanel?.Dismiss();
+            _dialoguePanel = null;
+            _finisherCueView?.Dismiss();
+            _finisherCueView = null;
+
+            _sm.Abandon("user_quit");
+            BuildRewardScreen();
         }
 
         void Update()
@@ -255,6 +319,8 @@ namespace Kindrith.UI
             DismissPhase1();
             _dialoguePanel?.Dismiss();
             _finisherCueView?.Dismiss();
+            if (_abandonCanvas != null) Destroy(_abandonCanvas.gameObject);
+            _abandonCanvas = null;
             _phase1 = null;
             _phase2 = null;
             _phase3 = null;
