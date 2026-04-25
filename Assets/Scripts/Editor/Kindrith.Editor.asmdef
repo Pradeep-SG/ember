@@ -1,10 +1,12 @@
 {
-    "name": "Kindrith.Dialogue",
-    "rootNamespace": "Kindrith.Dialogue",
+    "name": "Kindrith.Editor",
+    "rootNamespace": "Kindrith.Editor",
     "references": [
-        "GUID:6dbb9528ab844bf5954217f00341e6ad"
+        "GUID:fffff3cf5f334e8f95c0d95dbe6ece50"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
