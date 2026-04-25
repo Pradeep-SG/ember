@@ -1,4 +1,6 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Kindrith.Core.csproj" />
+  <Project Path="Kindrith.Breathing.csproj" />
+  <Project Path="Kindrith.ShadowBattle.csproj" />
   <Project Path="Tests.EditMode.csproj" />
 </Solution>
