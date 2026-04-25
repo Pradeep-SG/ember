@@ -26,9 +26,12 @@ namespace Kindrith.Persistence
             if (record == null) throw new ArgumentNullException(nameof(record));
             if (string.IsNullOrEmpty(record.id)) throw new ArgumentException("record.id required", nameof(record));
 
+            // Phase-3 sync requirement (data-model §12) — every save bumps updated_at.
+            record.updated_at = DateTime.UtcNow.ToString("o");
+            if (record.schema_version <= 0) record.schema_version = 1;
+
             var path = Path.Combine(_folder, record.id + ".json");
-            var json = JsonUtility.ToJson(record, prettyPrint: true);
-            File.WriteAllText(path, json);
+            AtomicJsonStore.WriteAtomic(path, record, prettyPrint: true);
         }
 
         public BattleRecord[] LoadRecent(int limit)

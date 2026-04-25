@@ -2,7 +2,8 @@
     "name": "Kindrith.Editor",
     "rootNamespace": "Kindrith.Editor",
     "references": [
-        "GUID:fffff3cf5f334e8f95c0d95dbe6ece50"
+        "GUID:fffff3cf5f334e8f95c0d95dbe6ece50",
+        "GUID:ccbc1ddf3bc6404ea12e683e80633d63"
     ],
     "includePlatforms": [
         "Editor"
