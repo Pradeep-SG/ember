@@ -60,6 +60,7 @@ namespace Kindrith.UI
             ringRt.sizeDelta = new Vector2(420, 420);
             ringRt.anchoredPosition = Vector2.zero;
             var ringImage = ringGo.GetComponent<Image>();
+            ringImage.sprite = CircleSpriteFactory.Create(256);
             ringImage.color = palette.Bone;
 
             var instrGo = new GameObject("Instruction", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
