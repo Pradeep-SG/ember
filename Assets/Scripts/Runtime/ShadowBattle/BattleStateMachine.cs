@@ -81,6 +81,11 @@ namespace Kindrith.ShadowBattle
             {
                 entryContext["beads_remaining"] = Context.DemonBeads.Remaining;
             }
+            if (to == BattlePhase.Outcome && Context != null)
+            {
+                Context.Outcome = OutcomeRouter.Resolve(Context);
+                entryContext["outcome"] = Context.Outcome.ToString();
+            }
             if (abandonReason != null)
             {
                 entryContext["abandon_reason"] = abandonReason;
