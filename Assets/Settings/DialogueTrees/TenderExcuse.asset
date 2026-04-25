@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe35610c1c494fbcb959bc09baacea3d, type: 3}
+  m_Name: TenderExcuse
+  m_EditorClassIdentifier: Kindrith.Dialogue::Kindrith.Dialogue.DialogueTree
+  Archetype: 1
+  EntryNodeId: node_0
+  Nodes:
+  - Id: node_0
+    DemonLine: Hey. It was a long day. You don't have to be a machine every hour.
+    Options:
+    - Text: Being kind to myself doesn't have to mean doing this specific thing.
+      Class: 0
+      LeadsToNodeId: node_1a
+    - Text: Yeah, it was a lot.
+      Class: 1
+      LeadsToNodeId: node_1b
+    - Text: I don't have to be a machine.
+      Class: 2
+      LeadsToNodeId: node_1c
+    NextNodeId: 
+  - Id: node_1a
+    DemonLine: Of course not. But what would a kind person do right now? Rest. Unwind.
+      Maybe just... take the edge off.
+    Options: []
+    NextNodeId: node_2
+  - Id: node_1b
+    DemonLine: I know. I'm not saying it wasn't. I'm saying you noticed, and that's
+      something. Let's take care of you.
+    Options: []
+    NextNodeId: node_2
+  - Id: node_1c
+    DemonLine: You don't. Nobody is watching but you. Be gentle with the person who
+      made it through today.
+    Options: []
+    NextNodeId: node_2
+  - Id: node_2
+    DemonLine: You can be gentle with yourself and still do the thing. The two aren't
+      opposites. Please. Just for tonight.
+    Options:
+    - Text: Gentleness that hurts me tomorrow isn't gentleness. I know the difference
+        now.
+      Class: 0
+      LeadsToNodeId: node_3a
+    - Text: I want to feel better.
+      Class: 1
+      LeadsToNodeId: node_3b
+    - Text: Just tonight. You're right.
+      Class: 2
+      LeadsToNodeId: node_3c
+    NextNodeId: 
+  - Id: node_3a
+    DemonLine: ...okay. You've been listening to someone else lately.
+    Options: []
+    NextNodeId: 
+  - Id: node_3b
+    DemonLine: Of course you do. There are other ways.
+    Options: []
+    NextNodeId: 
+  - Id: node_3c
+    DemonLine: Good. I'm glad we talked.
+    Options: []
+    NextNodeId: 

@@ -4,6 +4,6 @@
   <Project Path="Kindrith.ShadowBattle.csproj" />
   <Project Path="Tests.EditMode.csproj" />
   <Project Path="Kindrith.Dialogue.csproj" />
-  <Project Path="Tests.PlayMode.csproj" />
   <Project Path="Kindrith.Editor.csproj" />
+  <Project Path="Tests.PlayMode.csproj" />
 </Solution>
