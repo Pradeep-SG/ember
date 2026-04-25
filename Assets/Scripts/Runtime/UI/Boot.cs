@@ -6,13 +6,10 @@ using Kindrith.Persistence;
 
 namespace Kindrith.UI
 {
-    // Bootstrap entry point. Initializes the analytics bus + battle store, builds the home
-    // shell, and emits app_opened with resume_reason=cold_start. The full Phase 1 battle
-    // playback (BreathingHarness → DialogueRunner UI → FinisherSequencer UI → RewardScreen)
-    // is wired here as a separate Phase 1 polish PR; WP-08 ships the analytics/persistence
-    // pipeline plus the home UI so the battle plug-in is straightforward.
     public sealed class Boot : MonoBehaviour
     {
+        [SerializeField] BattleRunner _battleRunner;
+
         AnalyticsBus _analytics;
         BattleStore _store;
         DefaultEnvelopeProvider _envelope;
@@ -23,6 +20,7 @@ namespace Kindrith.UI
         public AnalyticsBus Analytics => _analytics;
         public BattleStore Store => _store;
         public HomeShell HomeShell => _homeShell;
+        public BattleRunner BattleRunner => _battleRunner;
 
         void Awake()
         {
@@ -37,6 +35,12 @@ namespace Kindrith.UI
             _homeShell = homeGo.AddComponent<HomeShell>();
             _homeShell.Initialize(_store);
             _homeShell.ResistRequested += OnResistRequested;
+
+            if (_battleRunner != null)
+            {
+                _battleRunner.Initialize(_analytics, _store);
+                _battleRunner.BattleEnded += OnBattleEnded;
+            }
         }
 
         void Start()
@@ -50,13 +54,26 @@ namespace Kindrith.UI
 
         void OnResistRequested(ArchetypeId archetype)
         {
-            // WP-08 surfaces the trigger event. Battle playback wiring lands in the Phase 1
-            // polish PR — see docs/phase2-backlog.md for the deferral note.
-            _analytics.Emit("shadow_battle_started", new Dictionary<string, object>
+            if (_battleRunner == null)
             {
-                ["archetype"] = archetype.ToString().ToLowerInvariant(),
-                ["trigger"] = "user_resist_tap",
-            });
+                // No battle wiring — emit the trigger event so the analytics surface still
+                // reflects the player's intent, then return to the home shell.
+                _analytics.Emit("shadow_battle_started", new Dictionary<string, object>
+                {
+                    ["archetype"] = archetype.ToString().ToLowerInvariant(),
+                    ["trigger"] = "user_resist_tap",
+                });
+                return;
+            }
+
+            _homeShell?.SetVisible(false);
+            _battleRunner.StartBattle(archetype);
+        }
+
+        void OnBattleEnded()
+        {
+            _homeShell?.RefreshSessionLog();
+            _homeShell?.SetVisible(true);
         }
 
         void OnApplicationPause(bool paused)
