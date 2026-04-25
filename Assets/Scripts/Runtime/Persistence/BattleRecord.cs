@@ -9,9 +9,12 @@ namespace Kindrith.Persistence
     {
         public string id;
         public int schema_version = 1;
+        public string chain_id;          // Phase 2 populates; null in Phase 1
+        public string demon_id;          // Phase 2 populates; null in Phase 1
         public string demon_archetype_used;
         public string started_at;
         public string ended_at;
+        public string updated_at;        // Phase-3 sync requirement (data-model §12)
         public long total_duration_ms;
         public string trigger;
         public Phase1Record phase1 = new Phase1Record();

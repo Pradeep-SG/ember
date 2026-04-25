@@ -1,10 +1,7 @@
 {
-    "name": "Kindrith.Persistence",
-    "rootNamespace": "Kindrith.Persistence",
-    "references": [
-        "GUID:6dbb9528ab844bf5954217f00341e6ad",
-        "GUID:014c848cbd654d0d84b0d4183cfa6dde"
-    ],
+    "name": "Kindrith.Data",
+    "rootNamespace": "Kindrith.Data",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
