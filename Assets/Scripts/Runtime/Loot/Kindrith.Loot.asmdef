@@ -1,14 +1,10 @@
 {
-    "name": "Kindrith.Editor",
-    "rootNamespace": "Kindrith.Editor",
+    "name": "Kindrith.Loot",
+    "rootNamespace": "Kindrith.Loot",
     "references": [
-        "GUID:fffff3cf5f334e8f95c0d95dbe6ece50",
-        "GUID:ccbc1ddf3bc6404ea12e683e80633d63",
-        "GUID:9e2b7a4d6c3f48e7b1f0a3d8c5e7b942"
+        "GUID:6dbb9528ab844bf5954217f00341e6ad"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

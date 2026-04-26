@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4d8b1e2a9f456382e1c5b8d3a7f9e6, type: 3}
+  m_Name: Phase2Catalog
+  m_EditorClassIdentifier:
+  Items:
+  - CatalogId: cosmetic_realm_lantern_warm
+    DisplayName: Warm Lantern
+    Rarity: 0
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_realm_lantern_warm
+  - CatalogId: cosmetic_outfit_scholar_shawl
+    DisplayName: Scholar's Shawl
+    Rarity: 0
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_outfit_scholar_shawl
+  - CatalogId: cosmetic_realm_path_stone_weathered
+    DisplayName: Weathered Path Stone
+    Rarity: 0
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_realm_path_stone_weathered
+  - CatalogId: cosmetic_title_quiet_resolve
+    DisplayName: Quiet Resolve
+    Rarity: 0
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_title_quiet_resolve
+  - CatalogId: functional_resonance_seed_minor
+    DisplayName: Resonance Seed (Minor)
+    Rarity: 0
+    IsFunctional: 1
+    IconPath: ui/icons/functional_resonance_seed_minor
+  - CatalogId: cosmetic_realm_brazier_dim
+    DisplayName: Dim Brazier
+    Rarity: 1
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_realm_brazier_dim
+  - CatalogId: cosmetic_outfit_warden_sash
+    DisplayName: Warden's Sash
+    Rarity: 1
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_outfit_warden_sash
+  - CatalogId: cosmetic_title_threshold_keeper
+    DisplayName: Threshold Keeper
+    Rarity: 1
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_title_threshold_keeper
+  - CatalogId: functional_clarity_pinch
+    DisplayName: Clarity Pinch
+    Rarity: 1
+    IsFunctional: 1
+    IconPath: ui/icons/functional_clarity_pinch
+  - CatalogId: cosmetic_realm_grove_seedling
+    DisplayName: Grove Seedling
+    Rarity: 2
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_realm_grove_seedling
+  - CatalogId: cosmetic_outfit_ember_cloak
+    DisplayName: Ember Cloak
+    Rarity: 2
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_outfit_ember_cloak
+  - CatalogId: functional_sanctuary_reprieve
+    DisplayName: Sanctuary Reprieve
+    Rarity: 2
+    IsFunctional: 1
+    IconPath: ui/icons/functional_sanctuary_reprieve
+  - CatalogId: cosmetic_realm_constellation_thread
+    DisplayName: Constellation Thread
+    Rarity: 3
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_realm_constellation_thread
+  - CatalogId: cosmetic_outfit_runed_mantle
+    DisplayName: Runed Mantle
+    Rarity: 3
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_outfit_runed_mantle
+  - CatalogId: cosmetic_realm_dawn_chime
+    DisplayName: Dawn Chime
+    Rarity: 4
+    IsFunctional: 0
+    IconPath: ui/icons/cosmetic_realm_dawn_chime
+  WeightCommon: 0.6
+  WeightUncommon: 0.25
+  WeightRare: 0.12
+  WeightEpic: 0.025
+  WeightLegendary: 0.005
