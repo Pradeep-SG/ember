@@ -62,13 +62,16 @@ namespace Kindrith.Tests.EditMode
         [Test]
         public void TierTransitions_DimWarmBrightRadiant()
         {
+            // TierFor breakpoints: <=25 Dim, <=60 Warm, <=85 Bright, else Radiant.
+            // Step values are picked off the boundary so the assertions don't sit on
+            // the exact breakpoint (where 25 stays Dim, 60 stays Warm, etc.).
             var m = NewMeter();
-            for (int i = 0; i < 7; i++) m.RecordStrongDay();
-            Assert.AreEqual(ResonanceTier.Warm, m.CurrentTier);  // 28
-            for (int i = 0; i < 8; i++) m.RecordStrongDay();
-            Assert.AreEqual(ResonanceTier.Bright, m.CurrentTier); // 60+
-            for (int i = 0; i < 7; i++) m.RecordStrongDay();
-            Assert.AreEqual(ResonanceTier.Radiant, m.CurrentTier); // ≥ 86
+            for (int i = 0; i < 7; i++) m.RecordStrongDay(); // 28 → Warm
+            Assert.AreEqual(ResonanceTier.Warm, m.CurrentTier);
+            for (int i = 0; i < 9; i++) m.RecordStrongDay(); // 64 → Bright
+            Assert.AreEqual(ResonanceTier.Bright, m.CurrentTier);
+            for (int i = 0; i < 7; i++) m.RecordStrongDay(); // 92 → Radiant
+            Assert.AreEqual(ResonanceTier.Radiant, m.CurrentTier);
         }
 
         [Test]

@@ -56,7 +56,8 @@ namespace Kindrith.ShadowBattle
         void OnTransitioned(BattlePhase from, BattlePhase to)
         {
             if (to != BattlePhase.Outcome) return;
-            // OutcomeRouter.Resolve runs inside TransitionTo before Transitioned fires.
+            // BattleStateMachine.TransitionTo resolves Context.Outcome before firing
+            // Transitioned for the Outcome step, so the read below is final.
             if (_buffEarned) return;
             if (_context.Outcome == BattleOutcome.Win || _context.Outcome == BattleOutcome.CriticalWin)
             {
