@@ -24,5 +24,15 @@ namespace Kindrith.ShadowBattle
             Remaining = next;
             Changed?.Invoke(Remaining);
         }
+
+        // Phase 2 Agree-option side-effect: Demon partially regenerates. Clamped to Max.
+        public void Regen(int amount)
+        {
+            if (amount <= 0) return;
+            int next = Math.Min(Max, Remaining + amount);
+            if (next == Remaining) return;
+            Remaining = next;
+            Changed?.Invoke(Remaining);
+        }
     }
 }

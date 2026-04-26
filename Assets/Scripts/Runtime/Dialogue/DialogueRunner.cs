@@ -5,8 +5,11 @@ namespace Kindrith.Dialogue
 {
     public sealed class DialogueRunner
     {
-        public const int OptionTimeoutMs = 20_000;
+        public const int DefaultOptionTimeoutMs = 20_000;
         public const int RequiredChoices = 2;
+
+        // Instance-settable so BattleFullClearBonus can apply the +10% Phase 1 reward.
+        public int OptionTimeoutMs { get; set; } = DefaultOptionTimeoutMs;
 
         readonly DialogueTree _tree;
         readonly IClock _clock;

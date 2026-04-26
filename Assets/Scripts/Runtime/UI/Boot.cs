@@ -4,21 +4,31 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using Kindrith.Analytics;
+using Kindrith.Core;
 using Kindrith.Dialogue;
 using Kindrith.Persistence;
+using Kindrith.Resonance;
 
 namespace Kindrith.UI
 {
     public sealed class Boot : MonoBehaviour
     {
         [SerializeField] BattleRunner _battleRunner;
+        [SerializeField] ResonanceTuning _resonanceTuning;
 
         AnalyticsBus _analytics;
         BattleStore _store;
+        WardenStore _wardenStore;
+        ResonanceStore _resonanceStore;
+        HabitLogStore _habitLogStore;
+        ChainStore _chainStore;
+        ResonanceMeter _resonanceMeter;
+        DailyResonanceTicker _resonanceTicker;
         DefaultEnvelopeProvider _envelope;
         NdjsonAnalyticsSink _sink;
         HomeShell _homeShell;
         ResumeOrAbandonSheet _resumeSheet;
+        SystemDayClock _dayClock;
         DateTime _lastAppOpenedUtc;
 
         public AnalyticsBus Analytics => _analytics;
@@ -32,14 +42,27 @@ namespace Kindrith.UI
             _sink = new NdjsonAnalyticsSink();
             _analytics = new AnalyticsBus(_sink, _envelope);
             _store = new BattleStore();
+            _wardenStore = new WardenStore();
+            _resonanceStore = new ResonanceStore();
+            _habitLogStore = new HabitLogStore();
+            _chainStore = new ChainStore();
+            _dayClock = new SystemDayClock();
             _lastAppOpenedUtc = DateTime.UtcNow;
+
+            if (_resonanceTuning == null)
+            {
+                _resonanceTuning = ScriptableObject.CreateInstance<ResonanceTuning>();
+            }
+            _resonanceMeter = new ResonanceMeter(_resonanceStore, _resonanceTuning);
+            _resonanceTicker = new DailyResonanceTicker(_resonanceMeter, _dayClock, _habitLogStore, _chainStore);
+            _resonanceTicker.TickIfNeeded();
 
             EnsureEventSystem();
 
             var homeGo = new GameObject("HomeShell");
             homeGo.transform.SetParent(transform, false);
             _homeShell = homeGo.AddComponent<HomeShell>();
-            _homeShell.Initialize(_store);
+            _homeShell.Initialize(_store, _resonanceMeter);
             _homeShell.ResistRequested += OnResistRequested;
 
             UnityEngine.Debug.Log($"Boot.Awake: _battleRunner SerializeField = {(_battleRunner == null ? "NULL" : _battleRunner.name)}");
@@ -52,7 +75,7 @@ namespace Kindrith.UI
 
             if (_battleRunner != null)
             {
-                _battleRunner.Initialize(_analytics, _store);
+                _battleRunner.Initialize(_analytics, _store, _wardenStore);
                 _battleRunner.BattleEnded += OnBattleEnded;
             }
             else
@@ -138,6 +161,7 @@ namespace Kindrith.UI
                     ["resume_reason"] = "foreground_resume",
                     ["time_since_last_open_ms"] = (long)bgMs,
                 });
+                _resonanceTicker?.TickIfNeeded();
             }
         }
 

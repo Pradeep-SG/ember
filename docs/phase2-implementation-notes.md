@@ -76,6 +76,20 @@ Added `chain_id`, `demon_id`, and `updated_at` fields to `BattleRecord`. Phase 1
 
 **CI flake (exit-139) triage outcome.** game-ci hadn't published the 6000.4.3f1 (our local) image at WP-10 time — pin stays at 6000.4.2f1. The flake didn't reproduce on the WP-10 PR's CI run, but historical recurrence rate makes a clean run inconclusive. Deferred bump to a focused follow-up once a newer image lands; `gh run rerun <id>` remains the workaround for the rare exit-139 occurrence.
 
+### WP-11 — Resonance system
+
+**`BattleClarityHook` lives in `ShadowBattle` but doesn't depend on Persistence.** The brief implied the hook writes `WardenRecord.clarity_expires_at` directly. Doing so would force `Kindrith.ShadowBattle` to reference `Kindrith.Persistence` and `Kindrith.Data`, expanding the assembly's surface. Instead the hook fires an `Action onClarityBuffEarned` callback; the UI layer (`BattleRunner.OnClarityBuffEarned`) owns the disk write because UI already references Persistence. Same pattern as the Resume sheet's controller wiring in WP-10.
+
+**`Harness_Resonance.unity` scene deferred.** The brief listed it as optional ("PlayMode optional, scene-loaded in `Harness_Resonance.unity`"). Phase 2 EditMode tests cover the meter mechanics, ticker idempotency, sanctuary semantics, and battle hooks. The visual harness is a "playtest the meter color" scene that's straightforward to build later when we have the real animated bar from art-direction. Tracked as backlog rather than shipped in this WP.
+
+**`ResonanceMeterView` is a placeholder bar.** Tier colors are derived programmatically from `Palette` (Bone-darken for Dim, Hearth for Warm, brightened-Hearth for Bright, Bone for Radiant). The Phase 3 art pass swaps in the proper animated bar from `art-direction.md`. The view subscribes to `TierChanged` so the swap will be drop-in.
+
+**`ResonanceTuning.SanctuaryDaysMaxPerWeek` defaults are stamped onto the persisted state on first load.** `ResonanceMeter`'s constructor reads `LoadOrCreate()` → if `sanctuary_days_max_per_week == 0` (fresh record) it copies tuning defaults in. This avoids a separate "bootstrap" code path; the meter just self-corrects on first instantiation.
+
+**`DialogueRunner.OptionTimeoutMs` migrated from `const` to instance property.** Required for `BattleFullClearBonus` to set the `1.1×` bonus. The default value lives in `DefaultOptionTimeoutMs` (still a `const`) so existing test references work.
+
+**`BattleContext.ClarityPool` (float, 0..1) added.** Phase 2 Counter chosen → `+0.1` clamped at `1.0`; consumed downstream by Phase 3 / reward-screen logic in later WPs. Phase 1 had no Clarity pool concept; we're introducing it now.
+
 ## Lessons from Phase 1 worth carrying forward
 
 - Hand-authored scene YAML works but is fragile across Unity reimports. Prefer programmatic UI construction with `FindAnyObjectByType` fallbacks for any SerializeField wiring.

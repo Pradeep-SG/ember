@@ -21,5 +21,10 @@ namespace Kindrith.ShadowBattle
         public int CountersInPhase2 { get; set; }
         public int BeatsLandedInPhase3 { get; set; }
         public BattleOutcome Outcome { get; set; }
+
+        // Phase 2 Counter-option side-effect: each Counter pumps +0.1 into this pool,
+        // clamped to [0, 1]. Phase 3 reads it; spec §5.1 turns full Clarity into the
+        // 24h Warden Clarity buff on Win.
+        public float ClarityPool { get; set; }
     }
 }
