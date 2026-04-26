@@ -7,6 +7,7 @@ using Kindrith.Analytics;
 using Kindrith.Core;
 using Kindrith.Dialogue;
 using Kindrith.Loot;
+using Kindrith.Onboarding;
 using Kindrith.Persistence;
 using Kindrith.Progression;
 using Kindrith.Resonance;
@@ -31,6 +32,10 @@ namespace Kindrith.UI
         DailyResonanceTicker _resonanceTicker;
         Levels _levels;
         LootRoller _lootRoller;
+        OathStore _oathStore;
+        DemonStore _demonStore;
+        OnboardingFlow _onboardingFlow;
+        OnboardingShell _onboardingShell;
         DefaultEnvelopeProvider _envelope;
         NdjsonAnalyticsSink _sink;
         HomeShell _homeShell;
@@ -53,6 +58,8 @@ namespace Kindrith.UI
             _resonanceStore = new ResonanceStore();
             _habitLogStore = new HabitLogStore();
             _chainStore = new ChainStore();
+            _oathStore = new OathStore();
+            _demonStore = new DemonStore();
             _dayClock = new SystemDayClock();
             _lastAppOpenedUtc = DateTime.UtcNow;
 
@@ -101,6 +108,20 @@ namespace Kindrith.UI
                 _battleRunner.Initialize(_analytics, _store, _wardenStore, _levels, _progressionTuning, _lootRoller, _resonanceMeter);
                 _battleRunner.BattleEnded += OnBattleEnded;
             }
+
+            // Onboarding gate: if the player hasn't run through the first-run flow,
+            // hide HomeShell and surface OnboardingShell. The flow is idempotent, so
+            // a kill-and-relaunch lands them on the same step.
+            _onboardingFlow = new OnboardingFlow(_wardenStore, _oathStore, _chainStore, _demonStore, _store, _analytics);
+            if (!_onboardingFlow.IsComplete)
+            {
+                _onboardingFlow.Resume();
+                _homeShell.SetVisible(false);
+                _onboardingShell = OnboardingShell.Create(transform, _homeShell.Palette,
+                    _onboardingFlow,
+                    onTutorialBattleRequested: StartTutorialBattle,
+                    onCompleted: FinishOnboarding);
+            }
             else
             {
                 UnityEngine.Debug.LogWarning("Boot.Awake: BattleRunner not found — Resist will emit but not play a battle.");
@@ -135,7 +156,48 @@ namespace Kindrith.UI
         void OnBattleEnded()
         {
             _homeShell?.RefreshSessionLog();
+
+            // If onboarding is still active, the tutorial battle just ended.
+            // Submit the TutorialBattle step (a no-op write to the flow — completion
+            // is detected from BattleStore.AnyForChain) and re-render the shell.
+            if (_onboardingFlow != null && _onboardingShell != null)
+            {
+                _onboardingShell.gameObject.SetActive(true);
+                _onboardingFlow.Submit(OnboardingStepId.TutorialBattle, new TutorialBattlePayload());
+                _onboardingShell.RenderCurrentStep();
+                return;
+            }
+
             _homeShell?.SetVisible(true);
+        }
+
+        void StartTutorialBattle()
+        {
+            if (_battleRunner == null)
+            {
+                UnityEngine.Debug.LogWarning("StartTutorialBattle: BattleRunner missing — skipping tutorial.");
+                return;
+            }
+            if (_onboardingShell != null) _onboardingShell.gameObject.SetActive(false);
+
+            var chainId = _onboardingFlow.OnboardingChainId;
+            string demonId = null;
+            foreach (var id in _demonStore.ListIds()) { demonId = id; break; }
+
+            _battleRunner.StartBattle(
+                ArchetypeId.PermissionGiver,
+                chainId: chainId,
+                demonId: demonId,
+                phase1MaxDurationMs: 45_000,
+                trigger: "onboarding_tutorial");
+        }
+
+        void FinishOnboarding()
+        {
+            if (_onboardingShell != null) Destroy(_onboardingShell.gameObject);
+            _onboardingShell = null;
+            _homeShell?.SetVisible(true);
+            _homeShell?.RefreshSessionLog();
         }
 
         // Unity UI Buttons need an EventSystem to receive input; programmatic Canvas creation

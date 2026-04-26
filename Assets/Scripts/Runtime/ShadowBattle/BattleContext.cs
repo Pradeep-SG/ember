@@ -5,18 +5,22 @@ namespace Kindrith.ShadowBattle
 {
     public sealed class BattleContext
     {
-        public BattleContext(ArchetypeId archetype, Beads demonBeads)
+        public BattleContext(ArchetypeId archetype, Beads demonBeads, string chainId = null, string demonId = null)
         {
             BattleId = Guid.NewGuid().ToString("N");
             Archetype = archetype;
             DemonBeads = demonBeads ?? throw new ArgumentNullException(nameof(demonBeads));
             Outcome = BattleOutcome.None;
+            ChainId = chainId;
+            DemonId = demonId;
         }
 
         // ULID-shaped identifier; WP-08 may swap in a real ULID generator alongside persistence.
         public string BattleId { get; }
         public ArchetypeId Archetype { get; }
         public Beads DemonBeads { get; }
+        public string ChainId { get; }
+        public string DemonId { get; }
         public int Phase1ElapsedMs { get; set; }
         public int CountersInPhase2 { get; set; }
         public int BeatsLandedInPhase3 { get; set; }

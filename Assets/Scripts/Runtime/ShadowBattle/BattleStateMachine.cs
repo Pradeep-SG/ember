@@ -21,12 +21,12 @@ namespace Kindrith.ShadowBattle
         public event Action<BattlePhase, BattlePhase> Transitioned;
         public event Action<int> Resumed; // bg duration ms — listeners re-arm phase clocks
 
-        public void StartBattle(ArchetypeId archetype)
+        public void StartBattle(ArchetypeId archetype, string chainId = null, string demonId = null)
         {
             if (Current != BattlePhase.Idle)
                 throw new InvalidOperationException($"Cannot StartBattle from {Current}");
 
-            Context = new BattleContext(archetype, new Beads());
+            Context = new BattleContext(archetype, new Beads(), chainId, demonId);
             TransitionTo(BattlePhase.Phase1);
         }
 

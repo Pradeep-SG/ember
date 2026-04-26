@@ -7,7 +7,10 @@ namespace Kindrith.ShadowBattle
 {
     public sealed class Phase1Controller
     {
-        public const int MaxDurationMs = 90_000;
+        public const int DefaultMaxDurationMs = 90_000;
+
+        // Instance-settable so the WP-14 tutorial battle can drop to a 45s soft cap.
+        public int MaxDurationMs { get; set; } = DefaultMaxDurationMs;
 
         readonly IClock _clock;
         readonly BreathingClock _breathingClock;

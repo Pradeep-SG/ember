@@ -72,7 +72,8 @@ namespace Kindrith.UI
             if (_palette == null) _palette = ScriptableObject.CreateInstance<Palette>();
         }
 
-        public void StartBattle(ArchetypeId archetype)
+        public void StartBattle(ArchetypeId archetype, string chainId = null, string demonId = null,
+            int phase1MaxDurationMs = -1, string trigger = "user_resist_tap")
         {
             if (IsActive) return;
             _battleStartUtc = DateTime.UtcNow;
@@ -82,17 +83,18 @@ namespace Kindrith.UI
 
             _emitter = new AnalyticsBusAdapter(_analytics);
             _sm = new BattleStateMachine(_emitter);
-            _sm.StartBattle(archetype);
+            _sm.StartBattle(archetype, chainId, demonId);
 
             _analytics.Emit("shadow_battle_started", new Dictionary<string, object>
             {
                 ["battle_id"] = _sm.Context.BattleId,
                 ["demon_archetype"] = archetype.ToString().ToLowerInvariant(),
-                ["trigger"] = "user_resist_tap",
+                ["trigger"] = trigger,
             });
 
             _phase1 = new Phase1Controller(
                 _clock, _bclock, new TapEvaluator(), _sm.Context.DemonBeads, _sm.Context, _emitter, OnPhase1Complete);
+            if (phase1MaxDurationMs > 0) _phase1.MaxDurationMs = phase1MaxDurationMs;
             BuildPhase1Visual();
             BuildAbandonOverlay();
             _phase1.Start();
@@ -425,6 +427,8 @@ namespace Kindrith.UI
             return new BattleRecord
             {
                 id = _sm.Context.BattleId,
+                chain_id = _sm.Context.ChainId,
+                demon_id = _sm.Context.DemonId,
                 demon_archetype_used = _sm.Context.Archetype.ToString().ToLowerInvariant(),
                 started_at = _battleStartUtc.ToString("o"),
                 ended_at = endUtc.ToString("o"),
