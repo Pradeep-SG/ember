@@ -32,6 +32,7 @@ namespace Kindrith.UI
         public ResistButton ResistButton => _resistButton;
         public SessionLogView SessionLog => _sessionLog;
         public ArchetypePicker ArchetypePicker => _archetypePicker;
+        public Palette Palette => _palette;
 
         public void Initialize(BattleStore store, ResonanceMeter resonanceMeter = null, Levels levels = null)
         {

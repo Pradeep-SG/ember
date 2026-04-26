@@ -45,5 +45,18 @@ namespace Kindrith.Persistence
                 .Where(r => r != null)
                 .ToArray();
         }
+
+        // Returns true iff any record's chain_id matches. Used by Onboarding to detect
+        // tutorial-battle completion without storing a flag.
+        public bool AnyForChain(string chainId)
+        {
+            if (string.IsNullOrEmpty(chainId) || !Directory.Exists(_folder)) return false;
+            foreach (var f in Directory.GetFiles(_folder, "*.json"))
+            {
+                var record = JsonUtility.FromJson<BattleRecord>(File.ReadAllText(f));
+                if (record != null && record.chain_id == chainId) return true;
+            }
+            return false;
+        }
     }
 }
