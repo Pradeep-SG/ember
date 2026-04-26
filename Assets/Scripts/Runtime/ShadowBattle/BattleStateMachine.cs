@@ -85,8 +85,9 @@ namespace Kindrith.ShadowBattle
         {
             var from = Current;
             Current = to;
-            Transitioned?.Invoke(from, to);
 
+            // Resolve outcome BEFORE firing Transitioned so subscribers (e.g.
+            // BattleClarityHook) see the final Context.Outcome on the Outcome step.
             if (to == BattlePhase.Outcome && Context != null)
             {
                 Context.Outcome = OutcomeRouter.Resolve(Context);
@@ -100,8 +101,11 @@ namespace Kindrith.ShadowBattle
                 };
                 if (abandonReason != null) completedParams["abandon_reason"] = abandonReason;
                 _emitter.Emit("shadow_battle_completed", completedParams);
+                Transitioned?.Invoke(from, to);
                 return;
             }
+
+            Transitioned?.Invoke(from, to);
 
             // Idle → don't emit (e.g., on Outcome → Idle wrap-up).
             if (to == BattlePhase.Idle) return;

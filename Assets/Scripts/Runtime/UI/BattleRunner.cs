@@ -24,6 +24,8 @@ namespace Kindrith.UI
 
         AnalyticsBus _analytics;
         BattleStore _store;
+        WardenStore _wardenStore;
+        BattleClarityHook _clarityHook;
 
         SystemClock _clock;
         BreathingClock _bclock;
@@ -49,10 +51,11 @@ namespace Kindrith.UI
 
         public bool IsActive => _sm != null && _sm.Current != BattlePhase.Idle;
 
-        public void Initialize(AnalyticsBus analytics, BattleStore store)
+        public void Initialize(AnalyticsBus analytics, BattleStore store, WardenStore wardenStore = null)
         {
             _analytics = analytics ?? throw new ArgumentNullException(nameof(analytics));
             _store = store ?? throw new ArgumentNullException(nameof(store));
+            _wardenStore = wardenStore;
             if (_palette == null) _palette = ScriptableObject.CreateInstance<Palette>();
         }
 
@@ -269,6 +272,10 @@ namespace Kindrith.UI
                 return;
             }
             _dialogueRunner = new DialogueRunner(tree, _clock);
+            // WP-11 Phase 1 full-clear bonus: +10% per-option timeout when beads
+            // extinguished before 90s. ApplyTo is a no-op otherwise.
+            BattleFullClearBonus.ApplyTo(_sm.Context, _dialogueRunner);
+            _clarityHook = new BattleClarityHook(_sm.Context, _dialogueRunner, _sm, OnClarityBuffEarned);
             _phase2 = new Phase2Controller(_dialogueRunner, _sm.Context, _emitter, _clock, OnPhase2Complete);
             _phase2.Start();
             _dialoguePanel = DialoguePanel.Create(transform, _palette, _dialogueRunner);
@@ -280,6 +287,21 @@ namespace Kindrith.UI
             _dialoguePanel?.Dismiss();
             _dialoguePanel = null;
             BuildPhase3();
+        }
+
+        void OnClarityBuffEarned()
+        {
+            if (_wardenStore == null) return;
+            try
+            {
+                var warden = _wardenStore.LoadOrCreate();
+                warden.clarity_expires_at = DateTime.UtcNow.AddHours(24).ToString("o");
+                _wardenStore.Save(warden);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"BattleRunner: failed to write clarity_expires_at: {ex.Message}");
+            }
         }
 
         void BuildPhase3()
@@ -361,6 +383,8 @@ namespace Kindrith.UI
             _finisherCueView?.Dismiss();
             if (_abandonCanvas != null) Destroy(_abandonCanvas.gameObject);
             _abandonCanvas = null;
+            _clarityHook?.Dispose();
+            _clarityHook = null;
             _phase1 = null;
             _phase2 = null;
             _phase3 = null;

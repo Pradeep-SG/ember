@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Kindrith.Core;
 using Kindrith.Dialogue;
 using Kindrith.Persistence;
+using Kindrith.Resonance;
 
 namespace Kindrith.UI
 {
@@ -16,9 +17,11 @@ namespace Kindrith.UI
         [SerializeField] Palette _palette;
 
         BattleStore _store;
+        ResonanceMeter _resonanceMeter;
         ResistButton _resistButton;
         SessionLogView _sessionLog;
         ArchetypePicker _archetypePicker;
+        ResonanceMeterView _resonanceMeterView;
         Canvas _canvas;
 
         public event Action<ArchetypeId> ResistRequested;
@@ -27,10 +30,11 @@ namespace Kindrith.UI
         public SessionLogView SessionLog => _sessionLog;
         public ArchetypePicker ArchetypePicker => _archetypePicker;
 
-        public void Initialize(BattleStore store)
+        public void Initialize(BattleStore store, ResonanceMeter resonanceMeter = null)
         {
             if (_palette == null) _palette = ScriptableObject.CreateInstance<Palette>();
             _store = store;
+            _resonanceMeter = resonanceMeter;
             BuildCanvas();
         }
 
@@ -84,6 +88,11 @@ namespace Kindrith.UI
             }
 
             _archetypePicker = ArchetypePicker.Create(canvasGo.transform, _palette);
+
+            if (_resonanceMeter != null)
+            {
+                _resonanceMeterView = ResonanceMeterView.Create(canvasGo.transform, _palette, _resonanceMeter);
+            }
         }
 
         void OnResistClicked()
