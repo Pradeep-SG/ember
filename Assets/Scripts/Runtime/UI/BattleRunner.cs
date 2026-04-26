@@ -7,8 +7,10 @@ using Kindrith.Analytics;
 using Kindrith.Breathing;
 using Kindrith.Core;
 using Kindrith.Dialogue;
+using Kindrith.Loot;
 using Kindrith.Persistence;
 using Kindrith.Progression;
+using Kindrith.Resonance;
 using Kindrith.ShadowBattle;
 
 namespace Kindrith.UI
@@ -28,6 +30,8 @@ namespace Kindrith.UI
         WardenStore _wardenStore;
         Levels _levels;
         ProgressionTuning _progressionTuning;
+        LootRoller _lootRoller;
+        ResonanceMeter _resonanceMeter;
         BattleClarityHook _clarityHook;
 
         SystemClock _clock;
@@ -55,13 +59,16 @@ namespace Kindrith.UI
         public bool IsActive => _sm != null && _sm.Current != BattlePhase.Idle;
 
         public void Initialize(AnalyticsBus analytics, BattleStore store,
-            WardenStore wardenStore = null, Levels levels = null, ProgressionTuning progressionTuning = null)
+            WardenStore wardenStore = null, Levels levels = null, ProgressionTuning progressionTuning = null,
+            LootRoller lootRoller = null, ResonanceMeter resonanceMeter = null)
         {
             _analytics = analytics ?? throw new ArgumentNullException(nameof(analytics));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _wardenStore = wardenStore;
             _levels = levels;
             _progressionTuning = progressionTuning;
+            _lootRoller = lootRoller;
+            _resonanceMeter = resonanceMeter;
             if (_palette == null) _palette = ScriptableObject.CreateInstance<Palette>();
         }
 
@@ -325,6 +332,7 @@ namespace Kindrith.UI
             _finisherCueView?.Dismiss();
             _finisherCueView = null;
             GrantBattleXp();
+            RollBattleLoot();
             BuildRewardScreen();
         }
 
@@ -344,6 +352,41 @@ namespace Kindrith.UI
                     _levels.GrantXp(_progressionTuning.XpPerShadowBattleWin, "shadow_battle_win");
                     break;
             }
+        }
+
+        // Roll a LootDrop on Win/CriticalWin, scaled by Resonance tier. Loss/Abandon
+        // get no drop (Pillar 2: kindness, not punishment — but no carrot either).
+        // Phase 2 just emits loot_rolled; the loot-drop animation lands in WP-15.
+        void RollBattleLoot()
+        {
+            if (_lootRoller == null) return;
+            if (_sm == null || _sm.Context == null) return;
+            string source;
+            switch (_sm.Context.Outcome)
+            {
+                case BattleOutcome.CriticalWin:
+                    source = LootRoller.Source.ShadowBattleCriticalWin;
+                    break;
+                case BattleOutcome.Win:
+                    source = LootRoller.Source.ShadowBattleWin;
+                    break;
+                default:
+                    return;
+            }
+            float luck = _resonanceMeter != null
+                ? LootRoller.LuckMultiplierForTier(_resonanceMeter.CurrentTier.ToString().ToLowerInvariant())
+                : 1f;
+            var drop = _lootRoller.RollForSource(source, luck);
+            if (drop.IsNone) return;
+
+            _analytics.Emit("loot_rolled", new Dictionary<string, object>
+            {
+                ["source"] = source,
+                ["catalog_id"] = drop.CatalogId,
+                ["rarity"] = drop.Rarity.ToString().ToLowerInvariant(),
+                ["is_functional"] = drop.IsFunctional,
+                ["luck_multiplier"] = luck,
+            });
         }
 
         void BuildRewardScreen()

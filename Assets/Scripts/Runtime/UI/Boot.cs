@@ -6,6 +6,7 @@ using UnityEngine.InputSystem.UI;
 using Kindrith.Analytics;
 using Kindrith.Core;
 using Kindrith.Dialogue;
+using Kindrith.Loot;
 using Kindrith.Persistence;
 using Kindrith.Progression;
 using Kindrith.Resonance;
@@ -18,6 +19,7 @@ namespace Kindrith.UI
         [SerializeField] BattleRunner _battleRunner;
         [SerializeField] ResonanceTuning _resonanceTuning;
         [SerializeField] ProgressionTuning _progressionTuning;
+        [SerializeField] LootCatalog _lootCatalog;
 
         AnalyticsBus _analytics;
         BattleStore _store;
@@ -28,6 +30,7 @@ namespace Kindrith.UI
         ResonanceMeter _resonanceMeter;
         DailyResonanceTicker _resonanceTicker;
         Levels _levels;
+        LootRoller _lootRoller;
         DefaultEnvelopeProvider _envelope;
         NdjsonAnalyticsSink _sink;
         HomeShell _homeShell;
@@ -69,6 +72,13 @@ namespace Kindrith.UI
             // class_evolution_triggered land in the same NDJSON sink as battle events.
             _levels = new Levels(_wardenStore, _progressionTuning, new AnalyticsBusAdapter(_analytics));
 
+            // LootRoller wires the WP-13 catalog. Without a serialized catalog the
+            // game still runs; battles just don't drop loot.
+            if (_lootCatalog != null)
+            {
+                _lootRoller = new LootRoller(_lootCatalog, new SystemRandomProvider());
+            }
+
             EnsureEventSystem();
 
             var homeGo = new GameObject("HomeShell");
@@ -88,7 +98,7 @@ namespace Kindrith.UI
 
             if (_battleRunner != null)
             {
-                _battleRunner.Initialize(_analytics, _store, _wardenStore, _levels, _progressionTuning);
+                _battleRunner.Initialize(_analytics, _store, _wardenStore, _levels, _progressionTuning, _lootRoller, _resonanceMeter);
                 _battleRunner.BattleEnded += OnBattleEnded;
             }
             else
