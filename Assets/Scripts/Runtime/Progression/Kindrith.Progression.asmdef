@@ -1,0 +1,19 @@
+{
+    "name": "Kindrith.Progression",
+    "rootNamespace": "Kindrith.Progression",
+    "references": [
+        "GUID:6dbb9528ab844bf5954217f00341e6ad",
+        "GUID:014c848cbd654d0d84b0d4183cfa6dde",
+        "GUID:ccbc1ddf3bc6404ea12e683e80633d63",
+        "GUID:2fb6e1fc77f04a9685fad2d5283e7eed"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

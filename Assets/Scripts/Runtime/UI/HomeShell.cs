@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Kindrith.Core;
 using Kindrith.Dialogue;
 using Kindrith.Persistence;
+using Kindrith.Progression;
 using Kindrith.Resonance;
 
 namespace Kindrith.UI
@@ -18,10 +19,12 @@ namespace Kindrith.UI
 
         BattleStore _store;
         ResonanceMeter _resonanceMeter;
+        Levels _levels;
         ResistButton _resistButton;
         SessionLogView _sessionLog;
         ArchetypePicker _archetypePicker;
         ResonanceMeterView _resonanceMeterView;
+        XpBarView _xpBarView;
         Canvas _canvas;
 
         public event Action<ArchetypeId> ResistRequested;
@@ -30,13 +33,16 @@ namespace Kindrith.UI
         public SessionLogView SessionLog => _sessionLog;
         public ArchetypePicker ArchetypePicker => _archetypePicker;
 
-        public void Initialize(BattleStore store, ResonanceMeter resonanceMeter = null)
+        public void Initialize(BattleStore store, ResonanceMeter resonanceMeter = null, Levels levels = null)
         {
             if (_palette == null) _palette = ScriptableObject.CreateInstance<Palette>();
             _store = store;
             _resonanceMeter = resonanceMeter;
+            _levels = levels;
             BuildCanvas();
         }
+
+        public void RefreshXpBar() => _xpBarView?.Refresh();
 
         public void RefreshSessionLog() => _sessionLog?.Refresh();
 
@@ -92,6 +98,11 @@ namespace Kindrith.UI
             if (_resonanceMeter != null)
             {
                 _resonanceMeterView = ResonanceMeterView.Create(canvasGo.transform, _palette, _resonanceMeter);
+            }
+
+            if (_levels != null)
+            {
+                _xpBarView = XpBarView.Create(canvasGo.transform, _palette, _levels);
             }
         }
 
