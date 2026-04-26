@@ -8,6 +8,7 @@ using Kindrith.Breathing;
 using Kindrith.Core;
 using Kindrith.Dialogue;
 using Kindrith.Persistence;
+using Kindrith.Progression;
 using Kindrith.ShadowBattle;
 
 namespace Kindrith.UI
@@ -25,6 +26,8 @@ namespace Kindrith.UI
         AnalyticsBus _analytics;
         BattleStore _store;
         WardenStore _wardenStore;
+        Levels _levels;
+        ProgressionTuning _progressionTuning;
         BattleClarityHook _clarityHook;
 
         SystemClock _clock;
@@ -51,11 +54,14 @@ namespace Kindrith.UI
 
         public bool IsActive => _sm != null && _sm.Current != BattlePhase.Idle;
 
-        public void Initialize(AnalyticsBus analytics, BattleStore store, WardenStore wardenStore = null)
+        public void Initialize(AnalyticsBus analytics, BattleStore store,
+            WardenStore wardenStore = null, Levels levels = null, ProgressionTuning progressionTuning = null)
         {
             _analytics = analytics ?? throw new ArgumentNullException(nameof(analytics));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _wardenStore = wardenStore;
+            _levels = levels;
+            _progressionTuning = progressionTuning;
             if (_palette == null) _palette = ScriptableObject.CreateInstance<Palette>();
         }
 
@@ -318,7 +324,26 @@ namespace Kindrith.UI
             _sm.Advance();
             _finisherCueView?.Dismiss();
             _finisherCueView = null;
+            GrantBattleXp();
             BuildRewardScreen();
+        }
+
+        // Grant XP based on resolved outcome. Loss/Abandon = no XP. Win/CriticalWin
+        // emit xp_granted via Levels which also writes WardenStore. Multi-level
+        // crossings emit one LeveledUp per crossing.
+        void GrantBattleXp()
+        {
+            if (_levels == null || _progressionTuning == null) return;
+            if (_sm == null || _sm.Context == null) return;
+            switch (_sm.Context.Outcome)
+            {
+                case BattleOutcome.CriticalWin:
+                    _levels.GrantXp(_progressionTuning.XpPerCriticalWin, "shadow_battle_critical_win");
+                    break;
+                case BattleOutcome.Win:
+                    _levels.GrantXp(_progressionTuning.XpPerShadowBattleWin, "shadow_battle_win");
+                    break;
+            }
         }
 
         void BuildRewardScreen()

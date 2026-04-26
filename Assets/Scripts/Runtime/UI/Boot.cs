@@ -7,7 +7,9 @@ using Kindrith.Analytics;
 using Kindrith.Core;
 using Kindrith.Dialogue;
 using Kindrith.Persistence;
+using Kindrith.Progression;
 using Kindrith.Resonance;
+using Kindrith.ShadowBattle;
 
 namespace Kindrith.UI
 {
@@ -15,6 +17,7 @@ namespace Kindrith.UI
     {
         [SerializeField] BattleRunner _battleRunner;
         [SerializeField] ResonanceTuning _resonanceTuning;
+        [SerializeField] ProgressionTuning _progressionTuning;
 
         AnalyticsBus _analytics;
         BattleStore _store;
@@ -24,6 +27,7 @@ namespace Kindrith.UI
         ChainStore _chainStore;
         ResonanceMeter _resonanceMeter;
         DailyResonanceTicker _resonanceTicker;
+        Levels _levels;
         DefaultEnvelopeProvider _envelope;
         NdjsonAnalyticsSink _sink;
         HomeShell _homeShell;
@@ -53,17 +57,26 @@ namespace Kindrith.UI
             {
                 _resonanceTuning = ScriptableObject.CreateInstance<ResonanceTuning>();
             }
+            if (_progressionTuning == null)
+            {
+                _progressionTuning = ScriptableObject.CreateInstance<ProgressionTuning>();
+            }
             _resonanceMeter = new ResonanceMeter(_resonanceStore, _resonanceTuning);
             _resonanceTicker = new DailyResonanceTicker(_resonanceMeter, _dayClock, _habitLogStore, _chainStore);
             _resonanceTicker.TickIfNeeded();
+
+            // Levels uses an analytics-bus-shaped emitter so xp_granted /
+            // class_evolution_triggered land in the same NDJSON sink as battle events.
+            _levels = new Levels(_wardenStore, _progressionTuning, new AnalyticsBusAdapter(_analytics));
 
             EnsureEventSystem();
 
             var homeGo = new GameObject("HomeShell");
             homeGo.transform.SetParent(transform, false);
             _homeShell = homeGo.AddComponent<HomeShell>();
-            _homeShell.Initialize(_store, _resonanceMeter);
+            _homeShell.Initialize(_store, _resonanceMeter, _levels);
             _homeShell.ResistRequested += OnResistRequested;
+            _levels.LeveledUp += (from, to) => _homeShell?.RefreshXpBar();
 
             UnityEngine.Debug.Log($"Boot.Awake: _battleRunner SerializeField = {(_battleRunner == null ? "NULL" : _battleRunner.name)}");
 
@@ -75,7 +88,7 @@ namespace Kindrith.UI
 
             if (_battleRunner != null)
             {
-                _battleRunner.Initialize(_analytics, _store, _wardenStore);
+                _battleRunner.Initialize(_analytics, _store, _wardenStore, _levels, _progressionTuning);
                 _battleRunner.BattleEnded += OnBattleEnded;
             }
             else
